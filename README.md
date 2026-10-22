@@ -99,35 +99,7 @@ Nodos dedicados exclusivamente a la persistencia en disco de los fragmentos bina
 ### 5.1. Flujo de Escritura y Carga (`uploadFile`)
 Para almacenar un archivo garantizando alta disponibilidad y consistencia:
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Cliente as Usuario / Cliente
-    participant LB as Balanceador de Carga
-    participant MW as Middleware A (Activo)
-    participant DB as BD de Metadatos
-    participant NA as Nodo Almacenamiento A
-    participant NB as Nodo Almacenamiento B
-
-    Cliente->>LB: POST /uploadFile (Binario + Metadatos)
-    LB->>MW: Enruta petición a instancia disponible
-    Note over MW: 1. Fragmenta archivo en Chunks<br/>2. Calcula Checksums SHA-256
-    MW->>DB: Consulta nodos disponibles y reserva cuota
-    DB-->>MW: Devuelve IDs de Nodos destino (ej. Nodo A y Nodo B para réplica)
-    MW->>DB: Registra metadatos iniciales (Estado: PROCESANDO)
-    
-    par Transmisión de Chunks por RPC
-        MW->>NA: RPC writeChunk(Chunk_1, hash)
-        MW->>NB: RPC writeChunk(Chunk_1_replica, hash)
-    end
-    
-    NA-->>MW: Confirmación de escritura y validación de hash
-    NB-->>MW: Confirmación de escritura y validación de hash
-    
-    MW->>DB: Actualiza metadatos (Estado: DISPONIBLE, ubicaciones confirmadas)
-    MW-->>LB: Respuesta exitosa (idFile, estado, tamaño)
-    LB-->>Cliente: 201 Created (HTTP JSON response)
-```
+![Subida de archivo](./images/subirArchivo.png)
 
 1. **Ingesta**: El cliente remite el archivo al Balanceador de Cargas.
 2. **Asignación**: El balanceador inspecciona métricas de carga e identifica que **Middleware A** está activo y saludable.
@@ -141,37 +113,16 @@ sequenceDiagram
 ### 5.2. Flujo de Lectura y Recuperación (`getFile` y `seeMetadata`)
 
 #### A. Consulta Rápida de Metadatos (`seeMetadata`)
+
+![Ver Metadata](./images/leerMetadata.png)
+
 - El cliente invoca la petición con el `idFile`.
 - El balanceador enruta al middleware disponible.
 - El middleware ejecuta una lectura rápida indexada sobre la base de datos de metadatos y retorna de inmediato la ficha técnica del archivo sin interactuar con los nodos de almacenamiento, optimizando ancho de banda y tiempos de respuesta.
 
 #### B. Recuperación de Archivo Completo (`getFile`)
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Cliente as Usuario / Cliente
-    participant LB as Balanceador de Carga
-    participant MW as Middleware A
-    participant DB as BD de Metadatos
-    participant NA as Nodo Almacenamiento A
-    participant NC as Nodo Almacenamiento C
 
-    Cliente->>LB: GET /getFile/{idFile}
-    LB->>MW: Enruta petición
-    MW->>DB: SELECT * FROM Chunks WHERE idFile = ? ORDER BY indice
-    DB-->>MW: Lista de Chunks y nodos contenedores
-    
-    par Recuperación Paralela
-        MW->>NA: RPC readChunk(Chunk_1)
-        MW->>NC: RPC readChunk(Chunk_2)
-    end
-    
-    NA-->>MW: Envía binario de Chunk_1
-    NC-->>MW: Envía binario de Chunk_2
-    Note over MW: Reensambla partes y valida integridad global
-    MW-->>LB: Stream del archivo unificado
-    LB-->>Cliente: 200 OK (Descarga de archivo)
-```
+![Ver archivo](./images/leerArchivo.png)
 
 1. El usuario solicita la descarga del archivo mediante su identificador único.
 2. El middleware consulta el catálogo de fragmentos en la base de datos de metadatos para conocer qué partes componen el archivo, su ordenamiento y en qué nodos residen.
@@ -184,6 +135,8 @@ sequenceDiagram
 La actualización de archivos puede implementarse bajo dos estrategias según el caso de uso:
 - **Versionado Inmutable**: Se escriben los nuevos fragmentos modificados con un nuevo identificador de versión, actualizando el puntero principal en la base de datos de metadatos únicamente cuando la escritura ha culminado con éxito. Este esquema previene condiciones de carrera (*race conditions*) y asegura lectura consistente sin bloqueos de archivo.
 - **Reemplazo Atómico**: Se eliminan o sobreescriben los fragmentos obsoletos y se reajusta el mapa de bloques en la base de metadatos.
+
+![Actualizar archivo](./images/ActualizarArchivo.png)
 
 ---
 
@@ -209,7 +162,9 @@ graph LR
 
 ### 6.1. Gestión de Saturación de Middlewares
 - **Síntoma**: Como se ilustra en el diagrama de la arquitectura, el **Middleware B** entra en estado **Saturado** debido a un alto volumen de operaciones de I/O o colas de espera elevadas.
+
 - **Mitigación**: Los agentes de supervisión del Balanceador de Cargas detectan el incremento de latencia o consumo de recursos en B y modifican dinámicamente el peso en el algoritmo de distribución (por ejemplo, *Weighted Least Connections*), desviando el 100% de las nuevas peticiones hacia **Middleware A**.
+
 - **MOM como Amortiguador**: Las solicitudes no urgentes se mantienen seguras en colas de mensajes, garantizando que ninguna orden se pierda por sobrecarga del procesador.
 
 ### 6.2. Tolerancia a Fallos en Nodos de Almacenamiento
