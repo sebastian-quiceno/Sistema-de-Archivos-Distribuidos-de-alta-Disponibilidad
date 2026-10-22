@@ -39,49 +39,6 @@ Este sistema se va a componer de:
 
 ![Topología de la Arquitectura Base](./images/ArquitecturaBase.png)
 
-### 3.1. Vista Lógica y Canales de Comunicación
-
-```mermaid
-graph TD
-    subgraph Capa_Acceso["Capa de Clientes"]
-        User["Usuarios / Clientes (Web, CLI, API)"]
-    end
-
-    subgraph Capa_Balanceo["Capa de Entrada y Tráfico"]
-        LB["Balanceador de Cargas (Reverse Proxy / Gateway)"]
-    end
-
-    subgraph Capa_Coordinacion["Capa de Middleware (Orquestación Híbrida)"]
-        MWA["Middleware A (Estado: ACTIVO)"]
-        MWB["Middleware B (Estado: SATURADO)"]
-        ColaMsg[("Colas MOM - Mensajería Asíncrona")]
-    end
-
-    subgraph Capa_Metadatos["Capa de Control e Indexación"]
-        DBMeta[("Base de Datos de Metadatos\n(Relaciones, Chunks y Nodos)")]
-    end
-
-    subgraph Capa_Almacenamiento["Capa de Almacenamiento Distribuido"]
-        NodoA[("Nodo A\n(Storage Worker)")]
-        NodoB[("Nodo B\n(Storage Worker)")]
-        NodoC[("Nodo C\n(Storage Worker)")]
-    end
-
-    User -->|"HTTP/REST o RPC"| LB
-    LB -->|"Enrutamiento por disponibilidad"| MWA
-    LB -.->|"Sobrecarga evitada"| MWB
-
-    MWA <-->|"Colas de peticiones y tareas"| ColaMsg
-    MWB <-->|"Colas de peticiones y tareas"| ColaMsg
-
-    MWA <-->|"Transacciones ACID (Índices)"| DBMeta
-    MWB <-->|"Transacciones ACID (Índices)"| DBMeta
-
-    MWA -->|"RPC / Streams de Bloques"| NodoA
-    MWA -->|"RPC / Streams de Bloques"| NodoB
-    MWA -->|"RPC / Streams de Bloques"| NodoC
-```
-
 ## 4. Desglose de Componentes y Responsabilidades
 
 ### 4.1. Capa de Usuarios / Clientes (Frontend, SDK y CLI)
