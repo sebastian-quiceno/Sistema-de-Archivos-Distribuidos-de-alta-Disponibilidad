@@ -1,14 +1,14 @@
-package com.sdan.middleware.Domain.Folders.ValueObjects;
+package com.sdan.middleware.Domain.ValueObjects;
 
 import com.sdan.middleware.BuildingBlocks.Domain.Guard;
 
-public class FolderName {
-    private static final int MAX_CHARACTERS = 50;
+public class Version {
+    private static final int MAX_CHARACTERS = 10;
 
     private final String value;
 
-    public FolderName(String value) {
-        Guard.validText(value, "folder_name", MAX_CHARACTERS);
+    public Version(String value) {
+        Guard.validText(value, "version", MAX_CHARACTERS);
         this.value = value;
     }
 
@@ -20,8 +20,8 @@ public class FolderName {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FolderName userName = (FolderName) o;
-        return java.util.Objects.equals(value, userName.value);
+        Version version = (Version) o;
+        return java.util.Objects.equals(value, version.value);
     }
 
     @Override
@@ -33,5 +33,4 @@ public class FolderName {
     public String toString() {
         return value;
     }
-
 }

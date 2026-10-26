@@ -1,16 +1,14 @@
-package com.sdan.middleware.Domain.Users.ValueObjects;
+package com.sdan.middleware.Domain.ValueObjects;
 
-import com.sdan.middleware.BuildingBlocks.Domain.DomainException;
 import com.sdan.middleware.BuildingBlocks.Domain.Guard;
-import com.sdan.middleware.Domain.Users.User;
 
-public class UserName {
-    private static final int MAX_CHARACTERS = 50;
+public class PasswordHash {
+    private static final int MAX_CHARACTERS = 255;
 
     private final String value;
 
-    public UserName(String value) {
-        Guard.validText(value, "username", MAX_CHARACTERS);
+    public PasswordHash(String value) {
+        Guard.validText(value, "passwordHash", MAX_CHARACTERS);
         this.value = value;
     }
 
@@ -22,7 +20,7 @@ public class UserName {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserName userName = (UserName) o;
+        PasswordHash userName = (PasswordHash) o;
         return java.util.Objects.equals(value, userName.value);
     }
 

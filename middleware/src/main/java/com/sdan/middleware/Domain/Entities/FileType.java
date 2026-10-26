@@ -1,7 +1,7 @@
-package com.sdan.middleware.Domain.FileTypes;
+package com.sdan.middleware.Domain.Entities;
 
 import com.sdan.middleware.BuildingBlocks.Domain.Guard;
-import com.sdan.middleware.Domain.FileTypes.ValueObjects.FileTypeName;
+import com.sdan.middleware.Domain.ValueObjects.FileTypeName;
 
 import java.util.UUID;
 

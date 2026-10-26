@@ -1,8 +1,8 @@
-package com.sdan.middleware.Domain.Users;
+package com.sdan.middleware.Domain.Entities;
 
 import com.sdan.middleware.BuildingBlocks.Domain.Guard;
-import com.sdan.middleware.Domain.Users.ValueObjects.PasswordHash;
-import com.sdan.middleware.Domain.Users.ValueObjects.UserName;
+import com.sdan.middleware.Domain.ValueObjects.PasswordHash;
+import com.sdan.middleware.Domain.ValueObjects.UserName;
 
 import java.util.Date;
 import java.util.UUID;

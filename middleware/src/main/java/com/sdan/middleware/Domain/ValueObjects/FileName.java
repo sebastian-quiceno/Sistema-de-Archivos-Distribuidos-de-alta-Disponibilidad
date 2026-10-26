@@ -1,4 +1,4 @@
-package com.sdan.middleware.Domain.Files.ValueObjects;
+package com.sdan.middleware.Domain.ValueObjects;
 
 import com.sdan.middleware.BuildingBlocks.Domain.Guard;
 
@@ -20,8 +20,8 @@ public class FileName {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FileName userName = (FileName) o;
-        return java.util.Objects.equals(value, userName.value);
+        FileName fleName = (FileName) o;
+        return java.util.Objects.equals(value, fleName.value);
     }
 
     @Override

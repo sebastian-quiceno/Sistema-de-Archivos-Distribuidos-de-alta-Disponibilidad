@@ -1,7 +1,6 @@
-package com.sdan.middleware.Domain.Folders;
+package com.sdan.middleware.Domain.Entities;
 
-import com.sdan.middleware.Domain.Folders.ValueObjects.FolderName;
-import com.sdan.middleware.Domain.Users.User;
+import com.sdan.middleware.Domain.ValueObjects.FolderName;
 
 import java.util.*;
 

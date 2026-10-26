@@ -1,10 +1,7 @@
-package com.sdan.middleware.Domain.Files;
+package com.sdan.middleware.Domain.Entities;
 
 import com.sdan.middleware.BuildingBlocks.Domain.Guard;
-import com.sdan.middleware.Domain.FileTypes.FileType;
-import com.sdan.middleware.Domain.Files.ValueObjects.FileName;
-import com.sdan.middleware.Domain.Folders.Folder;
-import tools.jackson.databind.deser.jdk.UUIDDeserializer;
+import com.sdan.middleware.Domain.ValueObjects.FileName;
 
 import java.util.Date;
 import java.util.UUID;
@@ -14,17 +11,17 @@ public class File {
     private Folder folder;
     private FileType fileType;
     private FileName name;
-    private Long size;
+    private Long bytesSize;
     private Integer totalPartitions;
     private Date dateCreated;
     private Date lastTimeModified;
 
-    private File(UUID id, Folder folder, FileType fileType, FileName name, Long size, Integer totalPartitions, Date dateCreated, Date lastTimeModified) {
+    private File(UUID id, Folder folder, FileType fileType, FileName name, Long bytesSize, Integer totalPartitions, Date dateCreated, Date lastTimeModified) {
         this.id = id;
         this.folder = folder;
         this.fileType = fileType;
         this.name = name;
-        this.size = Guard.positive(size, "file_size");
+        this.bytesSize = Guard.positive(bytesSize, "file_size");
         this.totalPartitions = Guard.positive(totalPartitions, "total_partitions");
         this.dateCreated = dateCreated;
         this.lastTimeModified = lastTimeModified;
@@ -47,8 +44,8 @@ public class File {
         return name;
     }
 
-    public Long getSize() {
-        return size;
+    public Long getBytesSize() {
+        return bytesSize;
     }
 
     public Integer getTotalPartitions() {
@@ -80,8 +77,8 @@ public class File {
         name = newName;
     }
 
-    public void changeSize(Long newSize){
-        size = newSize;
+    public void changeBytesSize(Long newSize){
+        bytesSize = newSize;
     }
 
     public void changeTotalPartitions(Integer newTotalPartitions){
