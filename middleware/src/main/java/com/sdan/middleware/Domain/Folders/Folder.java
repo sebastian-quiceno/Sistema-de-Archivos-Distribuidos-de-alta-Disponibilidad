@@ -2,7 +2,7 @@ package com.sdan.middleware.Domain.Folders;
 
 import com.sdan.middleware.Domain.Folders.ValueObjects.FolderName;
 import com.sdan.middleware.Domain.Users.User;
-  
+
 import java.util.*;
 
 public class Folder {
