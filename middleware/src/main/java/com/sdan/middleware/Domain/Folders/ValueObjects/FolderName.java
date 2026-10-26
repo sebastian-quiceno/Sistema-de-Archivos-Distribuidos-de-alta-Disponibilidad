@@ -3,12 +3,12 @@ package com.sdan.middleware.Domain.Folders.ValueObjects;
 import com.sdan.middleware.BuildingBlocks.Domain.Guard;
 
 public class FolderName {
-    private static final int MAX_CHARACTERS = 20;
+    private static final int MAX_CHARACTERS = 50;
 
     private final String value;
 
     public FolderName(String value) {
-        Guard.validText(value, "FileTypeName", MAX_CHARACTERS);
+        Guard.validText(value, "folder_name", MAX_CHARACTERS);
         this.value = value;
     }
 
