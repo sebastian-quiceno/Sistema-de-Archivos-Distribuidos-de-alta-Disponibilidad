@@ -1,3 +1,33 @@
 spring:
+  profiles:
+    active: dev
+
+  servlet:
+    multipart:
+      max-file-size: ${MAX-FILE-SIZE}
+      max-request-size: ${MAX-REQUEST-SIZE}
+
+  config:
+    import: optional:file:.env[.properties]
+
   application:
     name: middleware
+
+app:
+  aws:
+    region: ${AWS_REGION}
+
+    access-key-id: ${AWS_ACCESS_KEY_ID}
+
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+
+    session-token: ${AWS_SESSION_TOKEN}
+
+    s3:
+      bucket: ${S3_BUCKET_NAME}
+
+jwt:
+  key:
+    secret: ${JWT_KEY}
+
+    ttl: ${EXPIRATION_TIME}
