@@ -33,9 +33,14 @@ public class Guard {
         return valor;
     }
 
-    public static <T extends Comparable<T>> T onRange(T value, T top, T bottom, String field) {
+    public static <T extends Comparable<? super T>> T onRange(T value, T top, T bottom, String field) {
+
         if (value == null || top == null || bottom == null) {
             throw new DomainException("Los valores a comparar en el campo " + field + " no pueden ser nulos");
+        }
+
+        if (bottom.compareTo(top) > 0) {
+            throw new DomainException("El límite inferior no puede ser mayor que el límite superior en el campo " + field);
         }
 
         if (value.compareTo(bottom) < 0 || value.compareTo(top) > 0) {

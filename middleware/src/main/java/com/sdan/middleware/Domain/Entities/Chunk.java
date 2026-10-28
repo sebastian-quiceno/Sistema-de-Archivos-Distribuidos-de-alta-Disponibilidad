@@ -1,5 +1,6 @@
 package com.sdan.middleware.Domain.Entities;
 
+import com.sdan.middleware.Domain.ValueObjects.FileHash;
 import com.sdan.middleware.Domain.ValueObjects.Path;
 import com.sdan.middleware.Domain.ValueObjects.Version;
 
@@ -11,7 +12,7 @@ public class Chunk {
     private Node node;
     private Boolean isReplica;
     private Long bytesSize;
-    private Hash
+    private FileHash fileHash;
     private Path path;
     private Version version;
 
