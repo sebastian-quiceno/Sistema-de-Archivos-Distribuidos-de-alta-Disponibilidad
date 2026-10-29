@@ -3,7 +3,6 @@ package com.sdan.middleware.Application.Folder;
 import com.sdan.middleware.Application.Inputs.Commands.CreateFolderCommand;
 import com.sdan.middleware.Application.Ports.Repositories.IFolderRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IUserRepository;
-import com.sdan.middleware.Application.Ports.Security.IAuthorizationService;
 import com.sdan.middleware.Application.Ports.Security.ICurrentUser;
 import com.sdan.middleware.Domain.Entities.Folder;
 import com.sdan.middleware.Domain.Entities.User;
@@ -38,7 +37,7 @@ public class CreateFolderUseCase {
 
         if(fatherFolder != null && !fatherFolder.getUser().getId().equals(loggedUser))
             throw new FolderDoesNotBelongToUserException(
-                    "La carpeta con el id: '"+fatherFolder.getFolder_id()+"' no pertenece al usuario con el id:'"+loggedUser
+                    "La carpeta con el id: '"+fatherFolder.getFolderId()+"' no pertenece al usuario con el id:'"+loggedUser
             );
 
         FolderName validFolderName = new FolderName(dto.folderName());

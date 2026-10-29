@@ -7,23 +7,23 @@ import java.util.*;
 
 //TODO: REVISAR si se puede tener un padre null
 public class Folder {
-    private UUID folder_id;
+    private UUID folderId;
     private User user;
     private Folder fatherFolder;
     private FolderName name;
-    private Date creation_date;
+    private Date creationDate;
 
     private Folder(UUID folder_id, User user, Folder fatherFolder, FolderName name, Date creation_date) {
-        this.folder_id = folder_id;
+        this.folderId = folder_id;
         this.user = user;
         this.fatherFolder = fatherFolder;
         this.name = name;
-        this.creation_date = creation_date;
+        this.creationDate = creation_date;
     }
 
     //Getters
-    public UUID getFolder_id() {
-        return folder_id;
+    public UUID getFolderId() {
+        return folderId;
     }
 
     public User getUser() {
@@ -38,8 +38,8 @@ public class Folder {
         return name;
     }
 
-    public Date getCreation_date() {
-        return creation_date;
+    public Date getCreationDate() {
+        return creationDate;
     }
 
     //Metodos Creacionales estaticos
