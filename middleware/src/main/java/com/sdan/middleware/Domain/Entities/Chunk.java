@@ -1,6 +1,7 @@
 package com.sdan.middleware.Domain.Entities;
 
 import com.sdan.middleware.Domain.ValueObjects.FileHash;
+import com.sdan.middleware.Domain.ValueObjects.FileKey;
 import com.sdan.middleware.Domain.ValueObjects.Path;
 import com.sdan.middleware.Domain.ValueObjects.Version;
 
@@ -13,16 +14,17 @@ public class Chunk {
     private Boolean isReplica;
     private Long bytesSize;
     private FileHash fileHash;
-    private Path path;
+    private FileKey key;
     private Version version;
 
-    public Chunk(UUID id, File file, Node node, Boolean isReplica, Long bytesSize, Path path, Version version) {
+    private Chunk(UUID id, File file, Node node, Boolean isReplica, Long bytesSize, FileHash fileHash, FileKey key, Version version) {
         this.id = id;
         this.file = file;
         this.node = node;
         this.isReplica = isReplica;
         this.bytesSize = bytesSize;
-        this.path = path;
+        this.fileHash = fileHash;
+        this.key = key;
         this.version = version;
     }
 
@@ -47,8 +49,12 @@ public class Chunk {
         return bytesSize;
     }
 
-    public Path getPath() {
-        return path;
+    public FileHash getFileHash() {
+        return fileHash;
+    }
+
+    public FileKey getKey() {
+        return key;
     }
 
     public Version getVersion() {
@@ -56,12 +62,12 @@ public class Chunk {
     }
 
     //Metodos constructores
-    public static Chunk create(File file, Node node, Boolean isReplica, Long bytesSize, Path path, Version version){
-        return new Chunk(UUID.randomUUID(), file, node, isReplica, bytesSize, path, version);
+    public static Chunk create(File file, Node node, Boolean isReplica, Long bytesSize, FileHash fileHash, FileKey key, Version version){
+        return new Chunk(UUID.randomUUID(), file, node, isReplica, bytesSize, fileHash, key, version);
     }
 
-    public static Chunk reCreate(UUID id, File file, Node node, Boolean isReplica, Long bytesSize, Path path, Version version){
-        return new Chunk(id, file, node, isReplica, bytesSize, path, version);
+    public static Chunk reCreate(UUID id, File file, Node node, Boolean isReplica, Long bytesSize, FileHash fileHash, FileKey key, Path path, Version version){
+        return new Chunk(id, file, node, isReplica, bytesSize, fileHash, key, version);
     }
 
 
