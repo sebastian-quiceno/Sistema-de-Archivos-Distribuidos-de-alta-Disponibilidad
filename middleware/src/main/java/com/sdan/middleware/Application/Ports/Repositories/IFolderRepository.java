@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface IFolderRepository {
-    Optional<Folder> getById(UUID id);
+    Folder getById(UUID id);
 
     void save(Folder folder);
 

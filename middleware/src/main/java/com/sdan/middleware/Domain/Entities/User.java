@@ -39,8 +39,8 @@ public class User {
     }
 
     // Metodos contructores estaticos
-    public static User create(UserName username, PasswordHash passwordHash, Date date_created){
-        return new User(UUID.randomUUID(), username, passwordHash, date_created);
+    public static User create(UserName username, PasswordHash passwordHash){
+        return new User(UUID.randomUUID(), username, passwordHash, new Date());
     }
 
     public static User reCreate(UUID id, UserName username, PasswordHash passwordHash, Date date_created){

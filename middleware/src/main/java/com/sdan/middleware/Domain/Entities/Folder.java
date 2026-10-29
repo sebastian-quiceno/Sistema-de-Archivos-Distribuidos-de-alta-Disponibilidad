@@ -4,17 +4,19 @@ import com.sdan.middleware.Domain.ValueObjects.FolderName;
 
 import java.util.*;
 
+
+//TODO: REVISAR si se puede tener un padre null
 public class Folder {
     private UUID folder_id;
     private User user;
-    private List<Folder> folders;
+    private Folder fatherFolder;
     private FolderName name;
     private Date creation_date;
 
-    private Folder(UUID folder_id, User user, List<Folder> folders, FolderName name, Date creation_date) {
+    private Folder(UUID folder_id, User user, Folder fatherFolder, FolderName name, Date creation_date) {
         this.folder_id = folder_id;
         this.user = user;
-        this.folders = folders;
+        this.fatherFolder = fatherFolder;
         this.name = name;
         this.creation_date = creation_date;
     }
@@ -28,8 +30,8 @@ public class Folder {
         return user;
     }
 
-    public List<Folder> getFolders() {
-        return folders;
+    public Folder getFatherFolder() {
+        return fatherFolder;
     }
 
     public FolderName getName() {
@@ -41,21 +43,17 @@ public class Folder {
     }
 
     //Metodos Creacionales estaticos
-    public static Folder create(User user, FolderName folderName){
-        return new Folder(UUID.randomUUID(), user, new ArrayList<>(), folderName, new Date());
+    public static Folder create(User user, Folder fatherFolder, FolderName folderName){
+        return new Folder(UUID.randomUUID(), user, fatherFolder, folderName, new Date());
     }
 
-    public static Folder create(UUID id, User user, List<Folder> folders, FolderName folderName, Date date_created){
-        return new Folder(id, user, folders, folderName, date_created);
+    public static Folder reCreate(UUID id, User user, Folder fatherFolder, FolderName folderName, Date date_created){
+        return new Folder(id, user, fatherFolder, folderName, date_created);
     }
 
     //Metodos set
-    public void addFolders(Folder newFolder){
-        folders.add(newFolder);
-    }
-
-    public void removeFolders(Folder folder){
-        folders.remove(folder);
+    public void changeFatherFolder(Folder newFatherFolder){
+        fatherFolder = newFatherFolder;
     }
 
     public void changeFolderName(FolderName newName){
