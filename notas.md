@@ -55,3 +55,44 @@
 > CONFIGURAR BIEN EL SERVICIO, los metodos actualmente suben todo al **mismo nodo**
 
 - `Solucion:` **Pendiente**
+
+## [ ] 9. StorageService, `copyAnotherToNode`
+
+> [!CAUTION]
+> En el metodo `copyAnotherToNode` hay que revisar que parametros recibir, para poder copiar el nodo
+
+- `Solucion:` **Pendiente**
+
+
+## [ ] 10. COREGIR BASE DE DATOS
+
+> [!Caution]
+> Redefinir la base de datos, principalmente la Entidad nodo para que almacene los registros necesarios acorde a la funcionalidad
+
+- `Solucion:` **Pendiente**
+
+
+## [ ] 11. ValueObjects
+
+> [!TIP]
+> Revisar si se pueden limpiar (eliminar) algunos `valueObjects`
+
+- `Solucion:` **Pendiente**
+
+
+## [x] ~~12. obtencion de los nodos para la replicacion~~
+
+> [!NOTE]
+> Se esta haciendo un machetazo (se obtiene el doble de nodos para asegurar que no se repitan), revisar si hay una solucion mas elegante y optima. Se puede crear una cola que vaya revisando iterativamente si el archivo ya se replico a x nodos (toca implementar la funcion )
+
+- `Solucion:` Se creo el metodo `getDifferentsNodesIds`, revisar si hace falta tener el metodo `getRandomNodeAssignments` o se pueden unir
+
+
+## [ ] 13. Implementar patron SAGA
+
+> [!WARNING]
+> Actualmente, a la hora de particionar, si de 5 chunks se envian 4 pero el 5 falla, el problema no guarda la metadata, pero se guardan los archivos en los nodos (Se genera basura). Se puede implementar un patro SAGA pero hay que ver como hacerlo 
+
+- `Solucion:` **Pendiente**
+
+

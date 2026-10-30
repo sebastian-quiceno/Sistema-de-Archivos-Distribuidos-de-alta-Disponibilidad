@@ -1,5 +1,6 @@
 package com.sdan.middleware.Application.File;
 
+import com.sdan.middleware.Application.Inputs.Commands.CopyToAnotherNodeCommand;
 import com.sdan.middleware.Application.Inputs.Commands.CreateFileCommand;
 import com.sdan.middleware.Application.Ports.Repositories.*;
 import com.sdan.middleware.Application.Ports.Security.IFileHasher;
@@ -8,6 +9,7 @@ import com.sdan.middleware.Domain.Entities.*;
 import com.sdan.middleware.Domain.Exceptions.File.FileProcessingException;
 import com.sdan.middleware.Domain.Exceptions.FileType.FileTypeNotFoundException;
 import com.sdan.middleware.Domain.Exceptions.Folder.FolderNotFoundException;
+import com.sdan.middleware.Domain.Exceptions.Node.InsufficientNodesForReplicationException;
 import com.sdan.middleware.Domain.Exceptions.Node.NoAvailableNodesException;
 import com.sdan.middleware.Domain.Exceptions.Node.NodeNotFoundException;
 import com.sdan.middleware.Domain.ValueObjects.FileHash;
@@ -16,13 +18,13 @@ import com.sdan.middleware.Domain.ValueObjects.FileName;
 import com.sdan.middleware.Domain.ValueObjects.Version;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
 public class FileService {
     private static final int MAX_SIZE_PER_CHUNK = 32 * 1024 * 1024;
+    private static final int REPLICAITION_FACTOR = 3;
 
     private final IFileRepository fileRepository;
     private final IFolderRepository folderRepository;
@@ -65,7 +67,7 @@ public class FileService {
 
         int totalChunks = calculateTotalPartitions(command.size());
 
-        Queue<UUID> nodeIds = getRandomNodesId(totalChunks);
+        Queue<UUID> nodeIds = getRandomNodeAssignments(totalChunks);
 
         File newFile = File.create(folder, fileType, new FileName(command.name()), command.size(), Math.toIntExact(totalChunks));
 
@@ -91,7 +93,10 @@ public class FileService {
                 nodeIndex++;
 
                 Chunk chunk = uploadToNode(nodeId, newFile, chunkBytes, false);
+
                 chunks.add(chunk);
+
+                replicateFile(nodeId, chunk);
             }
 
             if (totalBytesRead != command.size()) {
@@ -130,6 +135,7 @@ public class FileService {
 
             storageService.uploadObject(key, uploadStream, chunkSize, file.getFileType().getName().getValue());
 
+
         } catch (IOException e) {
             throw new FileProcessingException("No fue posible subir el fragmento al nodo "+ nodeId + "\n" +e);
         }
@@ -153,6 +159,52 @@ public class FileService {
         return (int)Math.ceilDiv(size, MAX_SIZE_PER_CHUNK);
     }
 
+    //TODO: Revisar si hace falta pedir el Nodo al que se quiere replicar (Es mejor que lo haga el mismo)
+    private void replicateFile(UUID originalNodeId, Chunk chunk){
+
+        Node arrivalNode;
+        File file;
+        Chunk newCkunk;
+
+        CopyToAnotherNodeCommand command;
+
+
+        Node originalNode = nodeRepository.getById(originalNodeId).orElseThrow(
+                ()-> new NodeNotFoundException("No se encontro el nodo con el ID: '"+originalNodeId+"'")
+        );
+
+        List<UUID> arrivalNodesIds = getDifferentsNodesIds(originalNodeId);
+
+        for (UUID arrivalNodeId : arrivalNodesIds) {
+
+            arrivalNode = nodeRepository.getById(arrivalNodeId)
+                    .orElseThrow(() -> new NodeNotFoundException(
+                            "No se encontro el nodo con el ID: '" + arrivalNodeId + "'"
+                    ));
+
+
+            command = new CopyToAnotherNodeCommand(
+                    originalNode.getRegionName().getValue(),
+                    originalNode.getName().getValue(),
+                    chunk.getKey().getValue(),
+                    arrivalNode.getRegionName().getValue(),
+                    arrivalNode.getName().getValue()
+            );
+
+            storageService.copyToAnotherNode(command);
+
+            Chunk.create(
+                    chunk.getFile(),
+                    arrivalNode,
+                    true,
+                    chunk.getBytesSize(),
+                    chunk.getFileHash(),
+                    chunk.getKey(),
+                    new Version("zz2"));
+        }
+
+    }
+
 
     //TODO: revisar si es mejor sacarlo de la clase, e implementarlo en otra
     private void validateCommand(CreateFileCommand command) {
@@ -170,7 +222,18 @@ public class FileService {
         }
     }
 
-    private Queue<UUID> getRandomNodesId(int length) {
+    private List<UUID> getDifferentsNodesIds(UUID nodeId){
+        List<UUID> nodeIds = nodeRepository.getIdsOnline();
+
+        if(nodeIds.size() < REPLICAITION_FACTOR - 1)
+            throw new InsufficientNodesForReplicationException("No hay suficientes nodos para cumplir con el factor de replicacion. \n Nodos activos: "+nodeIds.size()+"\n Factor de replicacion: "+REPLICAITION_FACTOR);
+
+        Collections.shuffle(nodeIds);
+
+        return nodeIds.stream().filter((id)-> !nodeId.equals(id)).limit(REPLICAITION_FACTOR).toList();
+    }
+
+    private Queue<UUID> getRandomNodeAssignments(int length) {
         List<UUID> originalIds = nodeRepository.getIdsOnline();
 
         if (originalIds.isEmpty()) {
