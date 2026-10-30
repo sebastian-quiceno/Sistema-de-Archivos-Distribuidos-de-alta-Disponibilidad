@@ -1,8 +1,8 @@
 package com.sdan.middleware.Application.Ports.Security;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 
 public interface IFileHasher {
-    String Hash(FileInputStream file);
-    Boolean Verify(FileInputStream file, String fileHash);
+    String Hash(InputStream file);
+    Boolean Verify(InputStream file, String fileHash);
 }

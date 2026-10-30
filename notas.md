@@ -2,12 +2,12 @@
 
 ## 1. Implementar Seguridad por medio de Spring Security
 
-> [!DANGER]
+> [!CAUTION]
 > Es un requisito del documento, revisar si solo validar autentication o tambien authorization
 
 ## 2. Implementar Permisos
 
-> [!MISSING]
+> [!TIP]
 > No es critico, ni creo que sea importante, pero se puede implementar
 
 ## 3. Envio Archivos
@@ -19,3 +19,23 @@
 
 > [!WARNING]
 > Los chunks se estan guardando con una variable "version" inventada ("zz"), revisar si es un requisito el versionamiento o si se puede quitar
+
+## 5. Validacion de DTOs
+
+> [!WARNING]
+> Actualmente los DTOs no tienen comprobaciones (Si es nulo, si tiene valores validos etc), es importante validarlos. **PRINCIPALMENTE** en FileService
+
+## 6. FileService
+
+> [!IMPORTANT]
+> Esta clase tiene mucho codigo (puede estar violando Single Responsability). Se puede pensar en implementar el patron `Strategy` 
+
+## 7. FileProcessingException
+
+> [!TIP]
+> Revisar como hacer que una "exception" reciva 2 parametros (el texto y el error `e`), y para que sirve hacerlo
+
+## 8. StorageService
+
+> [!CAUTION]
+> CONFIGURAR BIEN EL SERVICIO, los metodos actualmente suben todo al **mismo nodo**
