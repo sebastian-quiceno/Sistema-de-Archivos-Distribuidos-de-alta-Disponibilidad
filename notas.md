@@ -1,6 +1,8 @@
 # NOTAS A TENER EN CUENTA
 
-## 1. Implementar Seguridad por medio de Spring Security
+[x] prueba
+
+## [x] 1. Implementar Seguridad por medio de Spring Security
 
 > [!CAUTION]
 > Es un requisito del documento, revisar si solo validar autentication o tambien authorization
@@ -10,10 +12,12 @@
 > [!TIP]
 > No es critico, ni creo que sea importante, pero se puede implementar
 
-## 3. Envio Archivos
+## ~~3. Envio Archivos~~
 
 > [!IMPORTANT]
-> El archivo lo envia el usuario (FrontEnd) al servidor (Backend), el servidor se encarga de guardarlos en los nodos correspondientes y de hacerles su respectiva particion, responde al usuario con un 200 
+> El archivo lo envia el usuario (FrontEnd) al servidor (Backend), el servidor se encarga de guardarlos en los nodos correspondientes y de hacerles su respectiva particion, responde al usuario con un 200
+
+`**Solucion:**` Los archivos los maneja el backend
 
 ## 4. Versionamiento Chunks
 
