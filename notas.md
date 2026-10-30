@@ -7,7 +7,7 @@
 
 - `Solucion:` **Pendiente**
 
-## 2. Implementar Permisos
+## [ ] 2. Implementar Permisos
 
 > [!TIP]
 > No es critico, ni creo que sea importante, pero se puede implementar
