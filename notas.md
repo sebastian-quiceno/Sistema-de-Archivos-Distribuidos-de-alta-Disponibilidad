@@ -95,4 +95,18 @@
 
 - `Solucion:` **Pendiente**
 
+## [ ] 14. Segregar FileService
+
+> [!WARNING]
+> El servicio de archivos funciona correctamente, pero esta rompiendo los principios solid **Single Responsability** y **Open/Close**, se puede segregar en las siguientes clases: 
+
+| Componente | Responsabilidad |
+| --- | --- |
+| `FileService` | Orquestar la creación y particionado del archivo |
+| `FilePartitionService` | Calcular y producir los chunks |
+| `NodeAssignmentService` | Seleccionar los nodos de almacenamiento |
+| `ChunkStorageService` | Almacenar chunks y construir metadata |
+| `ChunkReplicationService` | Replicar y verificar chunks |
+
+
 

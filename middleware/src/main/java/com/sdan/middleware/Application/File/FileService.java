@@ -74,7 +74,6 @@ public class FileService {
         List<Chunk> chunks = new ArrayList<>();
 
         long totalBytesRead = 0;
-        int nodeIndex = 0;
         UUID nodeId;
 
         try (InputStream input = command.file()) {
@@ -90,7 +89,6 @@ public class FileService {
                 }
 
                 nodeId = nodeIds.poll();
-                nodeIndex++;
 
                 Chunk chunk = uploadToNode(nodeId, newFile, chunkBytes, false);
 
