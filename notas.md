@@ -35,12 +35,12 @@
 
 - `Solucion:` **Pendiente**
 
-## [ ] 6. FileService
+## [x] ~~6. FileService~~
 
 > [!IMPORTANT]
 > Esta clase tiene mucho codigo (puede estar violando Single Responsability). Se puede pensar en implementar el patron `Strategy` 
 
-- `Solucion:` **Pendiente**
+- `Solucion:` Ya se corrigio, revisar solucion en [14](#14.-Segregar-FileService)
 
 ## [ ] 7. FileProcessingException
 
@@ -95,7 +95,7 @@
 
 - `Solucion:` **Pendiente**
 
-## [ ] 14. Segregar FileService
+## [x] ~~14. Segregar FileService~~
 
 > [!WARNING]
 > El servicio de archivos funciona correctamente, pero esta rompiendo los principios solid **Single Responsability** y **Open/Close**, se puede segregar en las siguientes clases: 
@@ -107,6 +107,9 @@
 | `NodeAssignmentService` | Seleccionar los nodos de almacenamiento |
 | `ChunkStorageService` | Almacenar chunks y construir metadata |
 | `ChunkReplicationService` | Replicar y verificar chunks |
+
+- `Solucion:` Se segrego correctamente el `FileService`, ahora cumple con **Single Responsability**
+
 
 
 
