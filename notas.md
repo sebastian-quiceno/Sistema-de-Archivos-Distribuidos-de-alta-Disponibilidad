@@ -110,6 +110,12 @@
 
 - `Solucion:` Se segrego correctamente el `FileService`, ahora cumple con **Single Responsability**
 
+## [ ] 15. Quitar fachadas
+
+> [!TIP]
+> Actualmente los metodos `ChunkReplicationService` y `ChunkStorageService` tienen metodos fachada, revisar hacen falta
+
+- `Solucion:` Se segrego correctamente el `FileService`, ahora cumple con **Single Responsability**
 
 
 
