@@ -19,7 +19,7 @@
 > [!IMPORTANT]
 > El archivo lo envia el usuario (FrontEnd) al servidor (Backend), el servidor se encarga de guardarlos en los nodos correspondientes y de hacerles su respectiva particion, responde al usuario con un 200
 
-- [x]`Solucion:` Los archivos los maneja el backend
+- `Solucion:` Los archivos los maneja el backend
 
 ## [ ] 4. Versionamiento Chunks
 
