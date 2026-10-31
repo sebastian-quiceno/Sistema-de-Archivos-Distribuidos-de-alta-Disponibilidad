@@ -40,7 +40,7 @@
 > [!IMPORTANT]
 > Esta clase tiene mucho codigo (puede estar violando Single Responsability). Se puede pensar en implementar el patron `Strategy` 
 
-- `Solucion:` Ya se corrigio, revisar solucion en [14](#14.-Segregar-FileService)
+- `Solucion:` Ya se corrigio, revisar solucion en [14]((#x-14-segregar-fileservice))
 
 ## [ ] 7. FileProcessingException
 
