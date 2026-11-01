@@ -7,8 +7,6 @@ import com.sdan.middleware.Domain.Exceptions.Node.NoAvailableNodesException;
 import java.util.*;
 
 public class NodeAssignmentService {
-    public static final int REPLICATION_FACTOR = 3;
-    public static final int REPLICAITION_FACTOR = REPLICATION_FACTOR;
 
     private final INodeRepository nodeRepository;
 
@@ -38,15 +36,15 @@ public class NodeAssignmentService {
         return new ArrayDeque<>(nodeIds);
     }
 
-    public List<UUID> getDifferentsNodesIds(UUID nodeId) {
+    public List<UUID> getDifferentsNodesIds(UUID nodeId, int replicationFactor) {
         List<UUID> nodeIds = nodeRepository.getIdsOnline();
 
-        if (nodeIds.size() < REPLICATION_FACTOR - 1)
-            throw new InsufficientNodesForReplicationException("No hay suficientes nodos para cumplir con el factor de replicacion. \n Nodos activos: " + nodeIds.size() + "\n Factor de replicacion: " + REPLICATION_FACTOR);
+        if (nodeIds.size() < replicationFactor - 1)
+            throw new InsufficientNodesForReplicationException("No hay suficientes nodos para cumplir con el factor de replicacion. \n Nodos activos: " + nodeIds.size() + "\n Factor de replicacion: " + replicationFactor);
 
         Collections.shuffle(nodeIds);
 
-        return nodeIds.stream().filter((id) -> !nodeId.equals(id)).limit(REPLICATION_FACTOR).toList();
+        return nodeIds.stream().filter((id) -> !nodeId.equals(id)).limit(replicationFactor).toList();
     }
 }
 

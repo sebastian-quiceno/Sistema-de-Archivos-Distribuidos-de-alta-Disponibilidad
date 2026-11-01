@@ -1,0 +1,69 @@
+package com.sdan.middleware.Application.File;
+
+import com.sdan.middleware.Application.Outputs.ChunkGetMethodOutput;
+import com.sdan.middleware.Application.Ports.Repositories.IChunkRepository;
+import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
+import com.sdan.middleware.Application.Ports.Repositories.INodeRepository;
+import com.sdan.middleware.Domain.Entities.Chunk;
+import com.sdan.middleware.Domain.Entities.File;
+import com.sdan.middleware.Domain.Exceptions.File.FileIsCorruptedException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
+import java.util.*;
+
+public class FileReconstructionService {
+    private final IChunkRepository chunkRepository;
+    private final IFileRepository fileRepository;
+    private final ChunkStorageService chunkStorageService;
+
+    public FileReconstructionService(IChunkRepository chunkRepository, IFileRepository fileRepository, ChunkStorageService chunkStorageService) {
+        this.chunkRepository = chunkRepository;
+        this.fileRepository = fileRepository;
+        this.chunkStorageService = chunkStorageService;
+    }
+
+    public InputStream mergeFile(File file) {
+
+        List<Chunk> chunks = fileRepository.getOriginalsChunks(file.getId());
+
+        List<InputStream> fileParts = new ArrayList<>();
+
+        try {
+            for (Chunk chunk : chunks) {
+                ChunkGetMethodOutput response = chunkStorageService.getChunk(chunk);
+
+                // Si el chunk original está corrupto, buscamos una réplica.
+                if (response.corrupted()) {
+                    List<Chunk> replicas = chunkRepository.getReplicaNodes(chunk.getKey().getValue());
+
+                    response = replicas.stream()
+                            .map(chunkStorageService::getChunk)
+                            .filter(replica -> !replica.corrupted())
+                            .findFirst()
+                            .orElseThrow(() ->
+                                    new FileIsCorruptedException("No se pudo recuperar el chunk: "+ chunk.getKey().getValue())
+                            );
+                }
+
+                fileParts.add(response.chunkFile());
+            }
+
+            return new SequenceInputStream(Collections.enumeration(fileParts));
+
+        } catch (RuntimeException e) {
+            // Si ocurre un error antes de devolver el stream,
+            // cerramos los streams que ya habíamos abierto.
+            fileParts.forEach(stream -> {
+                try {
+                    stream.close();
+                } catch (IOException closeException) {
+                    e.addSuppressed(closeException);
+                }
+            });
+
+            throw e;
+        }
+    }
+}

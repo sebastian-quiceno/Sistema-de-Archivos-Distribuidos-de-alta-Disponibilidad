@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ChunkReplicationService {
+    public static final int REPLICATION_FACTOR = 3;
 
     private final INodeRepository nodeRepository;
     private final IStorageService storageService;
@@ -28,19 +29,17 @@ public class ChunkReplicationService {
     }
 
     //TODO: Revisar si hace falta pedir el Nodo al que se quiere replicar (Es mejor que lo haga el mismo)
-    public void replicateFile(UUID originalNodeId, Chunk chunk) {
+    public void replicateFile(Chunk chunk, int replicationFactor) {
 
         Node arrivalNode;
-        File file;
-        Chunk newCkunk;
 
         CopyToAnotherNodeCommand command;
 
-        Node originalNode = nodeRepository.getById(originalNodeId).orElseThrow(
-                () -> new NodeNotFoundException("No se encontro el nodo con el ID: '" + originalNodeId + "'")
+        Node originalNode = nodeRepository.getById(chunk.getNode().getId()).orElseThrow(
+                () -> new NodeNotFoundException("No se encontro el nodo con el ID: '" + chunk.getNode().getId() + "'")
         );
 
-        List<UUID> arrivalNodesIds = nodeAssignmentService.getDifferentsNodesIds(originalNodeId);
+        List<UUID> arrivalNodesIds = nodeAssignmentService.getDifferentsNodesIds(chunk.getNode().getId(), replicationFactor);
 
         for (UUID arrivalNodeId : arrivalNodesIds) {
 
@@ -71,8 +70,8 @@ public class ChunkReplicationService {
     }
 
     //Revisar si elimar metodo... redundante (posible fachada)
-    public void replicateChunk(UUID originalNodeId, Chunk chunk) {
-        replicateFile(originalNodeId, chunk);
+    public void replicateChunk(UUID originalNodeId, Chunk chunk, int replica) {
+        replicateFile(originalNodeId, chunk, replica);
     }
 }
 

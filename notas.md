@@ -119,3 +119,16 @@
 
 
 
+## [ ] 16. Cambiar tamaño chunks
+
+> [!IMPORTANT]
+> Al parecer los chunks tiene un tamaño de 3Mb, no de 32Mb como se quiere, revisar como configurarlo bien en `FilePartitionService`
+
+- `Solucion:` **Pendiente**
+
+## [ ] 17. Hacer algo cuando se detecta que el chunk esta corrupto (No coincide el hash)
+
+> [!WARNING]
+> Actualmente, cuando un bloque esta corrupto solo lanza la exception, pero no replica ni lo actualiza
+
+- `Solucion:` **Pendiente**

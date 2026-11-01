@@ -14,11 +14,11 @@ public interface IStorageService {
     PresignedUrlOutput generateDownLoadUrl(FileKey key);
 
     //TODO: Mirar si Actualizar los archivos se cambia lo nunevo o se borran y vuelven a subir
-    void uploadObject(String key, InputStream content, long contentLength, String contentType);
+    void uploadObject(String nodeName, String region, String key, InputStream content, long contentLength, String contentType);
 
     void copyToAnotherNode(CopyToAnotherNodeCommand dto);
 
-    InputStream getObject(String key);
+    InputStream getObject(String nodeName, String region, String key);
 
     void deleteFileByKey(FileKey fileKey);
 
