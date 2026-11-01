@@ -75,9 +75,5 @@ public class ChunkStorageService {
         return new ChunkGetMethodOutput(chunk.getId(), chunkFile, false);
     }
 
-    //revisar si hace falta la fachada (Mejor eliminarla)
-    public Chunk storeChunk(UUID nodeId, File file, byte[] chunkBytes, boolean isReplica) {
-        return uploadToNode(nodeId, file, chunkBytes, isReplica);
-    }
 }
 

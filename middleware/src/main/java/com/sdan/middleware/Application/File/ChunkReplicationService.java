@@ -69,9 +69,5 @@ public class ChunkReplicationService {
         }
     }
 
-    //Revisar si elimar metodo... redundante (posible fachada)
-    public void replicateChunk(UUID originalNodeId, Chunk chunk, int replica) {
-        replicateFile(originalNodeId, chunk, replica);
-    }
 }
 
