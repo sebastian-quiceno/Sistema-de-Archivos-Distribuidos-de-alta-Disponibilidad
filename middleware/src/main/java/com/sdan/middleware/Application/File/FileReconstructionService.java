@@ -3,6 +3,7 @@ package com.sdan.middleware.Application.File;
 import com.sdan.middleware.Application.Outputs.ChunkGetMethodOutput;
 import com.sdan.middleware.Application.Ports.Repositories.IChunkRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
+import com.sdan.middleware.Application.Ports.Storage.IFileReconstructionService;
 import com.sdan.middleware.Domain.Entities.Chunk;
 import com.sdan.middleware.Domain.Entities.File;
 import com.sdan.middleware.Domain.Exceptions.File.FileIsCorruptedException;

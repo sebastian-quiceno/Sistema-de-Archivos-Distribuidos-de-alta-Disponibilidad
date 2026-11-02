@@ -2,9 +2,11 @@ package com.sdan.middleware.Application.File;
 
 import com.sdan.middleware.Application.Ports.Repositories.IChunkRepository;
 import com.sdan.middleware.Application.Ports.Security.IFileHasher;
+import com.sdan.middleware.Application.Ports.Storage.IFileIntegrityService;
 import com.sdan.middleware.Application.Ports.Storage.IStorageService;
 import com.sdan.middleware.Domain.Entities.Chunk;
 import com.sdan.middleware.Domain.Entities.File;
+import com.sdan.middleware.BuildingBlocks.Application.FileAuditStatus;
 
 import java.io.InputStream;
 import java.util.ArrayList;

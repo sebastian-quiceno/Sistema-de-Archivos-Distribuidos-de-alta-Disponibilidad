@@ -2,6 +2,7 @@ package com.sdan.middleware.Application.File;
 
 import com.sdan.middleware.Application.Outputs.IntegrityCheckReport;
 import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
+import com.sdan.middleware.Application.Ports.Storage.IFileIntegrityService;
 import com.sdan.middleware.Domain.Entities.File;
 import com.sdan.middleware.Domain.Entities.FileType;
 import com.sdan.middleware.Domain.Entities.Folder;
@@ -11,6 +12,7 @@ import com.sdan.middleware.Domain.ValueObjects.FileTypeName;
 import com.sdan.middleware.Domain.ValueObjects.FolderName;
 import com.sdan.middleware.Domain.ValueObjects.PasswordHash;
 import com.sdan.middleware.Domain.ValueObjects.UserName;
+import com.sdan.middleware.BuildingBlocks.Application.FileAuditStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -2,7 +2,9 @@ package com.sdan.middleware.Application.File;
 
 import com.sdan.middleware.Application.Outputs.IntegrityCheckReport;
 import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
+import com.sdan.middleware.Application.Ports.Storage.IFileIntegrityService;
 import com.sdan.middleware.Domain.Entities.File;
+import com.sdan.middleware.BuildingBlocks.Application.FileAuditStatus;
 
 import java.util.ArrayList;
 import java.util.List;

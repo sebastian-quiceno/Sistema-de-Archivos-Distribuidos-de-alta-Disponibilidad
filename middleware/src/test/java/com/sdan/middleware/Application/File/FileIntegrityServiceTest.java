@@ -16,6 +16,7 @@ import com.sdan.middleware.Domain.ValueObjects.FolderName;
 import com.sdan.middleware.Domain.ValueObjects.NodeName;
 import com.sdan.middleware.Domain.ValueObjects.RegionName;
 import com.sdan.middleware.Domain.ValueObjects.Version;
+import com.sdan.middleware.BuildingBlocks.Application.FileAuditStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +27,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;

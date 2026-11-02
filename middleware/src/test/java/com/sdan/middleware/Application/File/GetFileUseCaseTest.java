@@ -2,6 +2,7 @@ package com.sdan.middleware.Application.File;
 
 import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
 import com.sdan.middleware.Application.Ports.Security.ICurrentUser;
+import com.sdan.middleware.Application.Ports.Storage.IFileReconstructionService;
 import com.sdan.middleware.Domain.Entities.File;
 import com.sdan.middleware.Domain.Entities.FileType;
 import com.sdan.middleware.Domain.Entities.Folder;

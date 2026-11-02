@@ -1,4 +1,4 @@
-package com.sdan.middleware.Application.File;
+package com.sdan.middleware.BuildingBlocks.Application;
 
 public enum FileAuditStatus {
     HEALTHY,
