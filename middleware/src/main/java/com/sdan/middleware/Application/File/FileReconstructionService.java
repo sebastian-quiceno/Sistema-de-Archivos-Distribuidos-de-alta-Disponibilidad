@@ -28,6 +28,8 @@ public class FileReconstructionService {
 
         List<Chunk> chunks = fileRepository.getOriginalsChunks(file.getId());
 
+        List<Chunk> replicas;
+
         List<InputStream> fileParts = new ArrayList<>();
 
         try {
@@ -36,7 +38,7 @@ public class FileReconstructionService {
 
                 // Si el chunk original está corrupto, buscamos una réplica.
                 if (response.corrupted()) {
-                    List<Chunk> replicas = chunkRepository.getReplicaNodes(chunk.getKey().getValue());
+                    replicas = chunkRepository.getReplicaNodes(chunk.getId());
 
                     response = replicas.stream()
                             .map(chunkStorageService::getChunk)

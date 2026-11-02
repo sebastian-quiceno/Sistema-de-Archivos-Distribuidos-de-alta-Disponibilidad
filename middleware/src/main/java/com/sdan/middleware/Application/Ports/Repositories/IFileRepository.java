@@ -10,6 +10,8 @@ import java.util.UUID;
 public interface IFileRepository {
     Optional<File> getById(UUID id);
 
+    List<File> getAll();
+
     List<Chunk> getOriginalsChunks(UUID fileId);
 
     void save(File file);

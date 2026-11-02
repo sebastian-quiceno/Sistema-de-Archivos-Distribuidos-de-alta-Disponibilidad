@@ -20,6 +20,6 @@ public interface IStorageService {
 
     InputStream getObject(String nodeName, String region, String key);
 
-    void deleteFileByKey(FileKey fileKey);
+    void deleteFileByKey(String nodeName, String region, String key);
 
 }

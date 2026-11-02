@@ -71,8 +71,6 @@ public class FileService {
         }
     }
 
-    public void getFile(){}
-
     //TODO: revisar si es mejor sacarlo de la clase, e implementarlo en otra
     public void validateCommand(CreateFileCommand command) {
 

@@ -1,5 +1,7 @@
 package com.sdan.middleware.Application.Outputs;
 
+import com.sdan.middleware.Domain.Entities.Chunk;
+
 import java.io.InputStream;
 import java.util.UUID;
 
@@ -7,7 +9,7 @@ import java.util.UUID;
 // Si el archivo esta sano, retorna el bloque junto con un atributo bool para saber que fue bien
 // Si el archivo esta corrupto, no retorna el bloque y dice que esta mal
 public record ChunkGetMethodOutput(
-        UUID chunkId,
+        UUID chunk,
         InputStream chunkFile,
         boolean corrupted
 ) {

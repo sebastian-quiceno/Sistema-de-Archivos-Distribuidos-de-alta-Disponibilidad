@@ -15,7 +15,9 @@ public interface IChunkRepository{
 
     FileHash getFileHash(UUID id);
 
-    List<Chunk> getReplicaNodes(String key);
+    List<Chunk> getFileChunks(UUID id);
+
+    List<Chunk> getReplicaNodes(UUID id);
 
     void save(Chunk chunk);
 

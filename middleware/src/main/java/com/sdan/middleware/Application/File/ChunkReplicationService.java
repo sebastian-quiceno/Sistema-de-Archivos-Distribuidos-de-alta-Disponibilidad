@@ -69,5 +69,31 @@ public class ChunkReplicationService {
         }
     }
 
+    public void healChunk(Chunk corruptedChunk, Chunk saneChunk){
+        Node arrivalNode = nodeRepository.getById(corruptedChunk.getNode().getId()).orElseThrow(
+                ()-> new NodeNotFoundException("No se encontro el nodo con el id: "+ corruptedChunk.getNode().getId())
+        );
+
+        Node exitNode = nodeRepository.getById(saneChunk.getNode().getId()).orElseThrow(
+                ()-> new NodeNotFoundException("No se encontro el nodo con el id: "+ saneChunk.getNode().getId())
+        );
+
+
+        CopyToAnotherNodeCommand command = new CopyToAnotherNodeCommand(
+                exitNode.getRegionName().getValue(),
+                exitNode.getName().getValue(),
+                saneChunk.getKey().getValue(),
+                arrivalNode.getRegionName().getValue(),
+                arrivalNode.getName().getValue()
+        );
+
+        storageService.copyToAnotherNode(command);
+
+        storageService.deleteFileByKey(arrivalNode.getName().getValue(), arrivalNode.getRegionName().getValue(), corruptedChunk.getKey().getValue());
+
+    }
+
+
+
 }
 
