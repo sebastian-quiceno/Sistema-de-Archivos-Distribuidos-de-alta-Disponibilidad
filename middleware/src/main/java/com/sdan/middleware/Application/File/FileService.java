@@ -6,13 +6,15 @@ import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
 import com.sdan.middleware.Domain.Entities.Chunk;
 import com.sdan.middleware.Domain.Entities.File;
 import com.sdan.middleware.Domain.Entities.FileType;
-import com.sdan.middleware.Domain.Entities.Folder;import com.sdan.middleware.Domain.ValueObjects.FileName;
+import com.sdan.middleware.Domain.Entities.Folder;
+import com.sdan.middleware.Domain.ValueObjects.FileName;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FileService {
     public static final int REPLICATION_FACTOR = 3;
@@ -40,7 +42,6 @@ public class FileService {
         this.chunkReplicationService = chunkReplicationService;
     }
 
-
     public void uploadFile(FileName fileName, FileType fileType, Folder folder, InputStream file, long size) {
 
         // validateCommand(command);
@@ -55,8 +56,9 @@ public class FileService {
 
         filePartitionService.partition(file, size, chunkBytes -> {
             UUID nodeId = nodeIds.poll();
+            int partNumber = 1;
 
-            Chunk chunk = chunkStorageService.uploadToNode(nodeId, newFile, chunkBytes, false);
+            Chunk chunk = chunkStorageService.uploadToNode(nodeId, newFile, chunkBytes, false, partNumber);
 
             chunks.add(chunk);
 

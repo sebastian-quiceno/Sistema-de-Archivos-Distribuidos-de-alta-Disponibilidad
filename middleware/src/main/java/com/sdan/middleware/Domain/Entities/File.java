@@ -85,4 +85,10 @@ public class File {
         totalPartitions = newTotalPartitions;
     }
 
+    public boolean belongsToUser(UUID userId) {
+        if (userId == null || this.folder == null) {
+            return false;
+        }
+        return this.folder.belongsToUser(userId);
+    }
 }

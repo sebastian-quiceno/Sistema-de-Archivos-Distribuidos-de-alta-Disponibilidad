@@ -12,6 +12,11 @@ public interface IFileRepository {
 
     List<File> getAll();
 
+    List<File> findPage(int page, int size);
+
+    /**
+     * Obtiene los chunks originales de un archivo ordenados ascendentemente por partNumber.
+     */
     List<Chunk> getOriginalsChunks(UUID fileId);
 
     void save(File file);

@@ -4,7 +4,6 @@ import com.sdan.middleware.Application.Inputs.Commands.CopyToAnotherNodeCommand;
 import com.sdan.middleware.Application.Ports.Repositories.INodeRepository;
 import com.sdan.middleware.Application.Ports.Storage.IStorageService;
 import com.sdan.middleware.Domain.Entities.Chunk;
-import com.sdan.middleware.Domain.Entities.File;
 import com.sdan.middleware.Domain.Entities.Node;
 import com.sdan.middleware.Domain.Exceptions.Node.NodeNotFoundException;
 import com.sdan.middleware.Domain.ValueObjects.Version;
@@ -26,6 +25,10 @@ public class ChunkReplicationService {
         this.nodeRepository = nodeRepository;
         this.storageService = storageService;
         this.nodeAssignmentService = nodeAssignmentService;
+    }
+
+    public void replicateFile(Chunk chunk) {
+        replicateFile(chunk, REPLICATION_FACTOR);
     }
 
     //TODO: Revisar si hace falta pedir el Nodo al que se quiere replicar (Es mejor que lo haga el mismo)
@@ -65,20 +68,28 @@ public class ChunkReplicationService {
                     chunk.getBytesSize(),
                     chunk.getFileHash(),
                     chunk.getKey(),
-                    new Version("zz2"));
+                    new Version("zz2"),
+                    chunk.getPartNumber() != null ? chunk.getPartNumber() : 1);
         }
     }
 
     public void healChunk(Chunk corruptedChunk, Chunk saneChunk){
         Node arrivalNode = nodeRepository.getById(corruptedChunk.getNode().getId()).orElseThrow(
-                ()-> new NodeNotFoundException("No se encontro el nodo con el id: "+ corruptedChunk.getNode().getId())
+                () -> new NodeNotFoundException("No se encontro el nodo con el id: " + corruptedChunk.getNode().getId())
         );
 
         Node exitNode = nodeRepository.getById(saneChunk.getNode().getId()).orElseThrow(
-                ()-> new NodeNotFoundException("No se encontro el nodo con el id: "+ saneChunk.getNode().getId())
+                () -> new NodeNotFoundException("No se encontro el nodo con el id: " + saneChunk.getNode().getId())
         );
 
+        // 1. Eliminar primero el archivo corrupto del nodo destino para liberar la ubicación
+        storageService.deleteFileByKey(
+                arrivalNode.getName().getValue(),
+                arrivalNode.getRegionName().getValue(),
+                corruptedChunk.getKey().getValue()
+        );
 
+        // 2. Copiar el fragmento íntegro desde el nodo sano hacia el nodo destino
         CopyToAnotherNodeCommand command = new CopyToAnotherNodeCommand(
                 exitNode.getRegionName().getValue(),
                 exitNode.getName().getValue(),
@@ -88,12 +99,5 @@ public class ChunkReplicationService {
         );
 
         storageService.copyToAnotherNode(command);
-
-        storageService.deleteFileByKey(arrivalNode.getName().getValue(), arrivalNode.getRegionName().getValue(), corruptedChunk.getKey().getValue());
-
     }
-
-
-
 }
-

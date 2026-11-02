@@ -4,7 +4,6 @@ import com.sdan.middleware.Domain.ValueObjects.FolderName;
 
 import java.util.*;
 
-
 //TODO: REVISAR si se puede tener un padre null
 public class Folder {
     private UUID folderId;
@@ -60,4 +59,10 @@ public class Folder {
         name = newName;
     }
 
+    public boolean belongsToUser(UUID userId) {
+        if (userId == null || this.user == null || this.user.getId() == null) {
+            return false;
+        }
+        return this.user.getId().equals(userId);
+    }
 }
