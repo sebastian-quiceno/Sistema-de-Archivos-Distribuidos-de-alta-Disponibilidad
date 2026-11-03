@@ -99,7 +99,9 @@ public class ChunkStorageService {
 
             byte[] chunkBytes = chunkStream.readAllBytes();
 
-            boolean isValid = Boolean.TRUE.equals(fileHasher.Verify(
+            //La parte "Boolean.TRUE" es para evitar el null pointer exception
+            boolean isValid = Boolean.TRUE.equals(
+                fileHasher.Verify(
                     new ByteArrayInputStream(chunkBytes),
                     chunk.getFileHash().getValue()
             ));
@@ -113,5 +115,17 @@ public class ChunkStorageService {
         } catch (IOException e) {
             return new ChunkGetMethodOutput(chunk.getId(), null, true);
         }
+    }
+
+    public void deleteChunk(Chunk chunk) {
+        if (chunk == null || chunk.getNode() == null || chunk.getKey() == null) {
+            return;
+        }
+
+        storageService.deleteFileByKey(
+                chunk.getNode().getName().getValue(),
+                chunk.getNode().getRegionName().getValue(),
+                chunk.getKey().getValue()
+        );
     }
 }

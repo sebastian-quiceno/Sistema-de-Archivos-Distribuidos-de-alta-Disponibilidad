@@ -132,3 +132,14 @@
 > Actualmente, cuando un bloque esta corrupto solo lanza la exception, pero no replica ni lo actualiza
 
 - `Solucion:` **Pendiente**
+
+## [ ] 18. Revisar el catch del metodo `mergeFile` en `FileReconstructionService`
+
+> [!TIP]
+> Revisar como configurarlo para que use una exceptino y no un IOException 
+
+## [ ] 19. Revisar Refactorizacion `lookOverIntegrity`
+
+> [!NOTE]
+> Revisar en que clase deberia ir el metodo `lookOverIntegrity`, si en `FileService` o en `ChunkStorageService`
+
