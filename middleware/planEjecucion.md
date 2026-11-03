@@ -1,187 +1,179 @@
-# Plan de ejecución: Corrección y mejora de GetFileUseCase y CheckFilesUseCase
+# Implementación y configuración de interfaces e infraestructura
+
+**Prioridad: Alta**
 
 ## Objetivo
 
-Implementar las seis recomendaciones identificadas durante la revisión de `GetFileUseCase` y `CheckFilesUseCase`, corrigiendo problemas de seguridad, gestión de recursos, separación de responsabilidades, consistencia de datos y escalabilidad.
+Implementar, configurar y conectar correctamente todas las interfaces del proyecto, garantizando que los casos de uso dependan de abstracciones y que las implementaciones concretas se encuentren correctamente configuradas mediante inyección de dependencias.
 
-El objetivo es mejorar la implementación respetando los principios SOLID, especialmente SRP, OCP y DIP, sin introducir complejidad ni abstracciones innecesarias.
+El objetivo es completar la arquitectura de persistencia, seguridad y almacenamiento, respetando los principios SOLID y las convenciones existentes del proyecto. Utilizando el framework `Spring Boot`.
 
-## Instrucciones generales
+## 1. Repositorios
 
-Antes de comenzar:
+Implementar y configurar las siguientes interfaces:
 
-1. Analiza la estructura actual del proyecto y las convenciones arquitectónicas existentes.
-2. Revisa las implementaciones, interfaces, entidades, repositorios y servicios involucrados.
-3. Identifica las dependencias entre componentes y determina cómo implementar cada cambio sin romper funcionalidades existentes.
-4. No asumas que los ejemplos de código de este documento deben copiarse literalmente. Adáptalos a la arquitectura y al lenguaje del proyecto.
-5. No realices cambios fuera del alcance de este plan, salvo que sean estrictamente necesarios para completar alguna corrección.
-6. No elimines funcionalidades existentes ni introduzcas cambios incompatibles sin justificación.
+text
 
-## Fase 1: Corregir la validación de propiedad en GetFileUseCase
-
-**Prioridad: Crítica**
-
-### Tareas
-
-- Revisar cómo `GetFileUseCase` valida actualmente que un archivo pertenece al usuario autenticado.
-- Corregir cualquier condición lógica invertida o validación incorrecta.
-- Encapsular la comprobación de propiedad dentro de la entidad correspondiente (`File` o `Folder`), evitando acceder directamente a relaciones internas desde el caso de uso.
-- Implementar un método como `belongsToUser(UUID userId)`, adaptándolo al modelo de dominio.
-- Garantizar que los valores nulos no provoquen `NullPointerException`.
-- Lanzar `FileDoesNotBelongToUserException` cuando el archivo no pertenezca al usuario autenticado.
-
-### Criterios de aceptación
-
-- Un usuario únicamente puede obtener archivos de su propiedad.
-- Los archivos pertenecientes a otros usuarios son rechazados.
-- Los archivos sin carpeta o sin propietario asociado no generan errores inesperados.
-
-## Fase 2: Corregir la gestión de streams en getChunk y lookOverIntegrity
-
-**Prioridad: Alta**
+```text
+Repositories/
+    IChunkRepository.java
+    IFileRepository.java
+    IFileTypeRepository.java
+    IFolderRepository.java
+    INodeRepository.java
+    IUserRepository.java
+```
 
 ### Tareas
 
-- Analizar el ciclo de vida de los `InputStream` utilizados en `ChunkStorageService`.
-- Revisar especialmente los métodos `getChunk`, `lookOverIntegrity` y el flujo de reconstrucción (`mergeFile`).
-- Garantizar que todos los streams utilizados exclusivamente para auditoría o verificación se cierren correctamente mediante `try-with-resources`.
-- Evitar consumir un stream antes de que pueda utilizarse para reconstruir o entregar el archivo.
-- Si es necesario verificar la integridad durante una descarga, implementar una estrategia que permita calcular el hash sin consumir anticipadamente el stream que necesita el consumidor.
-- Evitar lecturas duplicadas innecesarias y fugas de conexiones o descriptores.
+- Revisar que la estructura de la base de datos (`metadata_DB/sdan.sql`) este acorde a las entidades del backed (``middleware/src/main/java/com/sdan/middleware/domain/model/entities/`) priorizando el backend, modificando la DB.
+- Revisar cada interfaz e identificar los métodos necesarios para satisfacer las operaciones requeridas por los casos de uso existentes.
+- Implementar los repositorios concretos en la capa de infraestructura, dentro de la siguiente ubicación:`middleware/src/main/java/com/sdan/middleware/Infraestructure/out`. Estos repositorios son la "implementacion" de los repositorios definidos en la capa de aplicacion (`middleware\src\main\java\com\sdan\middleware\Application\Ports\Repositories`)
+- Garantizar que las implementaciones de infraestructura implementen los contratos definidos en la capa de aplicación, respetando la dirección de las dependencias de la arquitectura.
+- Crear los procedimientos almacenados (_Stored Procedures_) necesarios para implementar las consultas y operaciones de persistencia de los repositorios.
+- Definir dichos procedimientos almacenados en el archivo `metadata_DB/sdan.sql`, respetando las convenciones y estructura existentes.
+- Utilizar la anotación `@Procedure` si JPA lo permite, sino utilizar `@Query` en los repositorios para invocar los procedimientos almacenados definidos en la base de datos.
+- Garantizar que los parámetros enviados y los resultados recibidos mediante los procedimientos almacenados se correspondan correctamente con los métodos y modelos definidos en las interfaces.
+- Garantizar que las consultas respeten las relaciones entre entidades, las restricciones de integridad y las reglas de persistencia del dominio.
+- Evitar consultas innecesarias, problemas N+1 y recuperación de información que no sea requerida por las operaciones.
+- Garantizar que las operaciones de persistencia respeten los tipos de datos, identificadores y relaciones definidos en el modelo de dominio.
+- Implementar las operaciones de creación, consulta, actualización y eliminación que realmente necesiten los casos de uso, evitando métodos innecesarios.
+- Evitar incorporar lógica de negocio dentro de los repositorios. Su responsabilidad debe limitarse al acceso y persistencia de datos.
 
 ### Criterios de aceptación
 
-- Los streams se cierran correctamente cuando corresponde.
-- La reconstrucción del archivo no produce archivos vacíos, incompletos o corruptos por consumo anticipado de streams.
-- La verificación de integridad funciona correctamente.
-- Se contemplan errores durante la lectura y el cierre de recursos.
+- Todas las interfaces solicitadas cuentan con sus respectivas implementaciones en la capa de infraestructura.
+- Los procedimientos almacenados necesarios están definidos en `metadata_DB/sdan.sql`.
+- Los repositorios deben utilizar `@Procedure` si JPA lo permite, sino deberan utilizar `@Query` para invocar los procedimientos almacenados correspondientes.
+- Los parámetros, resultados y tipos de datos están correctamente mapeados.
+- Las operaciones de persistencia funcionan correctamente y respetan las relaciones entre entidades.
+- No se duplica lógica de negocio dentro de los repositorios.
+- Los repositorios están correctamente integrados con los casos de uso existentes.
 
-## Fase 3: Segregar la lógica de integridad y curación
 
-**Prioridad: Alta**
+## 2\. Interfaces de seguridad
+
+Implementar y configurar las siguientes interfaces:
+
+text
+
+```text
+Security/
+    IAuthorizationService.java
+    ICurrentUser.java
+    IFileHasher.java
+    IPasswordHasher.java
+    ITokenGenerator.java
+    Permissions.java
+```
 
 ### Tareas
 
-- Analizar las responsabilidades actuales de `ChunkStorageService` y `ChunkReplicationService`.
-- Extraer la lógica de auditoría de integridad y auto-recuperación de `ChunkStorageService`.
-- Crear un servicio dedicado, denominado `FileIntegrityService`, que centralice la verificación de integridad y la curación de chunks.
-- Mantener `ChunkStorageService` enfocado en las operaciones de almacenamiento y recuperación de chunks.
-- Reducir el acoplamiento entre almacenamiento, replicación y verificación de integridad.
-- Revisar el flujo de curación para garantizar que, cuando se detecte un chunk original dañado, este también se incluya entre los fragmentos que deben curarse.
-- Revisar la generación y el nombrado de claves en `healChunk`, garantizando que la copia de un chunk no termine eliminándose accidentalmente por una operación posterior.
-- Garantizar que las operaciones de curación sean consistentes y no provoquen pérdida de datos.
+- Revisar las responsabilidades de cada interfaz y su utilización dentro de los casos de uso.
+- Implementar los mecanismos de autorización y consulta del usuario autenticado.
+- Configurar correctamente la generación y validación de hashes de archivos.
+- Configurar los mecanismos de hash y verificación de contraseñas utilizando algoritmos seguros y adecuados para contraseñas.
+- Implementar la generación de tokens respetando los mecanismos de autenticación existentes.
+- Configurar correctamente `Permissions` como parte del mecanismo de autorización, evitando duplicar reglas de acceso.
+- Garantizar que los casos de uso no dependan directamente de implementaciones concretas de seguridad.
+- No confundir el hash de integridad de archivos con el hash de contraseñas: deben utilizar estrategias y algoritmos apropiados para cada finalidad.
 
-### Criterios de aceptación
+## 3\. Interfaces de almacenamiento
 
-- La lógica de integridad está separada de la lógica de almacenamiento.
-- La curación contempla correctamente los chunks originales dañados.
-- Las claves utilizadas durante la replicación y curación son consistentes.
-- No se eliminan accidentalmente los archivos recién copiados.
+Implementar y configurar las siguientes interfaces:
 
-## Fase 4: Introducir un índice de partición en Chunk
+text
 
-**Prioridad: Alta**
-
-### Tareas
-
-- Incorporar un atributo `partNumber` en la entidad `Chunk`.
-- Revisar los mecanismos de creación y persistencia de chunks para garantizar que cada fragmento reciba su posición correcta dentro del archivo.
-- Actualizar los repositorios necesarios para recuperar los chunks originales ordenados por su índice.
-- Garantizar que `getOriginalsChunks(fileId)` devuelva los fragmentos en orden ascendente.
-
-### Criterios de aceptación
-
-- Cada chunk tiene un índice que representa su posición dentro del archivo.
-- Los chunks se recuperan siempre en orden ascendente.
-- La reconstrucción produce archivos idénticos al original.
-- La solución no depende del orden de inserción ni del comportamiento particular del motor de base de datos.
-
-## Fase 5: Mejorar la paginación y resiliencia de CheckFilesUseCase
-
-**Prioridad: Alta**
+```text
+Storage/
+    IFileDeletionService.java
+    IFileIntegrityService.java
+    IFileReconstructionService.java
+    IFileUpdateService.java
+    IStorageService.java
+```
 
 ### Tareas
 
-- Revisar la implementación actual de `CheckFilesUseCase`.
-- Reemplazar la recuperación completa mediante `fileRepository.getAll()` por un mecanismo de procesamiento paginado o por lotes.
-- Incorporar el método necesario en el repositorio, por ejemplo `findPage(page, size)`, respetando las convenciones existentes.
-- Procesar los archivos progresivamente para evitar cargar todos los registros en memoria.
-- Aislar la comprobación de cada archivo mediante un manejo individual de excepciones.
-- Garantizar que un error durante la auditoría de un archivo no interrumpa la comprobación de los siguientes.
-- Crear un objeto de resultado, por ejemplo `IntegrityCheckReport`, que permita conocer el resultado de la ejecución.
-- El reporte debe contemplar, como mínimo:
-  - Cantidad de archivos verificados.
-  - Cantidad de archivos íntegros.
-  - Cantidad de archivos curados correctamente.
-  - Cantidad de archivos con errores.
-  - Información suficiente para identificar los archivos que presentaron problemas.
+- Revisar las responsabilidades y operaciones que necesita cada interfaz.
+- Implementar los servicios concretos correspondientes.
+- Garantizar que cada servicio tenga una responsabilidad claramente definida.
 
-### Criterios de aceptación
+Responsabilidades esperadas:
 
-- La auditoría funciona mediante procesamiento paginado.
-- Un error individual no interrumpe el procesamiento general.
-- El resultado permite conocer el estado global de la auditoría.
-- El consumo de memoria no depende de la cantidad total de archivos almacenados.
-- Se contemplan repositorios vacíos, última página y errores durante el procesamiento.
+- **IFileDeletionService:** coordinar la eliminación de los chunks y sus respectivas réplicas.
+- **IFileIntegrityService:** verificar la integridad de los archivos y gestionar los procesos de curación o recuperación cuando corresponda.
+- **IFileReconstructionService:** reconstruir archivos a partir de sus chunks, respetando su orden y verificando su consistencia.
+- **IFileUpdateService:** coordinar la actualización del contenido de un archivo, incluyendo el almacenamiento de nuevos chunks, la actualización de metadata y la eliminación de los antiguos.
+- **IStorageService:** proporcionar las operaciones fundamentales de almacenamiento, recuperación y eliminación de contenido en los nodos.
+- Reutilizar los servicios y mecanismos existentes de almacenamiento, replicación, hashing y reconstrucción cuando sean adecuados.
+- Evitar duplicar lógica entre servicios.
+- Garantizar una correcta gestión de streams y recursos.
+- Contemplar los posibles fallos de comunicación con los nodos y las operaciones de almacenamiento.
+- Evitar que los servicios de almacenamiento contengan responsabilidades propias de los casos de uso.
 
-## Fase 6: Aplicar inversión de dependencias (DIP) y mejorar extensibilidad (OCP)
-
-**Prioridad: Media**
+## 4\. Configuración de inyección de dependencias
 
 ### Tareas
 
-- Analizar las dependencias actuales de los casos de uso y los servicios involucrados.
-- Identificar dependencias concretas que deban sustituirse por abstracciones.
-- Evaluar la creación de las siguientes interfaces:
-  - `IFileReconstructionService`, implementada por `FileReconstructionService`.
-  - `IFileIntegrityService`, implementada por `FileIntegrityService`.
-- Garantizar que los casos de uso dependan de contratos y no de implementaciones concretas cuando corresponda.
-- Configurar correctamente la inyección de dependencias.
-- Evitar crear interfaces innecesarias para componentes que no requieren variabilidad ni aislamiento.
-- Garantizar que sea posible sustituir las estrategias de reconstrucción o verificación sin modificar la lógica de los casos de uso.
+- Configurar todas las implementaciones mediante el mecanismo de inyección de dependencias del framework.
+- Garantizar que cada interfaz tenga una implementación concreta correctamente registrada.
+- Revisar los constructores de los casos de uso y servicios para garantizar que dependan de interfaces y no de implementaciones concretas.
+- Detectar y resolver dependencias circulares.
+- Evitar el uso innecesario de `@Autowired` sobre atributos; priorizar la inyección por constructor.
+- Revisar los scopes y ciclos de vida de los componentes cuando corresponda.
+- Garantizar que la aplicación pueda iniciar correctamente con todas las dependencias configuradas.
 
-### Criterios de aceptación
+## 5\. Integración con los casos de uso
 
-- Los casos de uso dependen de abstracciones apropiadas.
-- Las implementaciones concretas se resuelven mediante inyección de dependencias.
-- La arquitectura permite extender las estrategias sin modificar innecesariamente el código existente.
+Revisar los casos de uso existentes y garantizar que utilicen correctamente las interfaces implementadas.
 
-## Fase 7: Validación e integración final
+Prestar especial atención a:
 
-**Prioridad: Obligatoria**
+- `GetFileUseCase`
+- `CheckFilesUseCase`
+- `DeleteFileUseCase`
+- `UpdateFileUseCase`
+
+Verificar que:
+
+- Los casos de uso dependan de abstracciones.
+- Cada operación delegue sus responsabilidades en el servicio o repositorio correspondiente.
+- No exista lógica de persistencia, almacenamiento o seguridad directamente implementada dentro de los casos de uso.
+- No se dupliquen operaciones que ya estén disponibles en otros servicios.
+- Se mantengan los contratos y comportamientos existentes.
+
+## 6\. Validación y pruebas
 
 ### Tareas
 
-- Crear o actualizar pruebas para todos los cambios implementados.
-- Ejecutar las pruebas de integración relacionadas con almacenamiento, replicación, reconstrucción y auditoría.
-- Verificar que los flujos de subida, descarga, reconstrucción y recuperación de archivos continúen funcionando correctamente.
-- Comprobar que no existan errores de compilación ni problemas en la inyección de dependencias.
-- Revisar que las modificaciones respeten las convenciones y la arquitectura del proyecto.
-- Corregir cualquier regresión introducida durante la implementación.
+- Crear o actualizar pruebas unitarias para las implementaciones de repositorios y servicios.
+- Verificar las consultas personalizadas y sus resultados.
+- Probar los mecanismos de autenticación, autorización y hashing.
+- Verificar las operaciones de almacenamiento, eliminación, reconstrucción, integridad y actualización.
+- Validar la inyección de dependencias mediante pruebas de contexto de la aplicación.
+- Comprobar que no existan dependencias sin implementar ni errores de configuración.
+- Ejecutar las pruebas existentes y corregir las regresiones detectadas.
 
-### Criterios de aceptación
+## Criterios de aceptación
 
-- El proyecto compila correctamente.
-- Todas las pruebas relevantes pasan.
-- Los seis puntos del plan están implementados o cuentan con una justificación técnica documentada si alguno no puede completarse.
-- No existen regresiones conocidas en los flujos existentes.
+- Todas las interfaces solicitadas cuentan con implementaciones concretas cuando corresponde.
+- Los repositorios ejecutan correctamente las consultas necesarias para los casos de uso.
+- Las interfaces de seguridad y almacenamiento tienen responsabilidades claramente definidas.
+- Todas las dependencias están correctamente registradas e inyectadas.
+- Los casos de uso dependen de abstracciones y no de implementaciones concretas.
+- No existen dependencias circulares ni implementaciones duplicadas innecesariamente.
+- La aplicación inicia correctamente.
+- Las pruebas unitarias y de integración relevantes pasan.
+- Se respetan los principios SOLID, especialmente SRP, OCP y DIP.
 
-## Entrega final
+## Consideraciones importantes
 
-Al terminar, proporciona un informe que incluya:
-
-1. **Cambios realizados:** descripción de las modificaciones implementadas, agrupadas por fase.
-2. **Archivos modificados:** listado de archivos creados, modificados o eliminados y su propósito.
-3. **Decisiones técnicas:** explicación breve de las decisiones relevantes y cualquier desviación respecto al plan original.
-4. **Pruebas ejecutadas:** pruebas realizadas y sus resultados.
-5. **Pendientes:** problemas que no pudieron resolverse, limitaciones encontradas o recomendaciones adicionales.
-
-## Consideraciones finales
-
-- Ejecuta las fases en el orden establecido, respetando sus dependencias.
-- Prioriza la corrección y la integridad de los datos sobre la velocidad de implementación.
-- No consideres una tarea terminada únicamente porque el código compile; verifica su comportamiento.
-- No ocultes errores ni marques como completadas tareas que no hayan sido verificadas.
-- Mantén los cambios enfocados, coherentes y alineados con los principios SOLID.
-- Si durante la implementación descubres un problema adicional que afecta directamente la seguridad, integridad o funcionamiento de estos casos de uso, documenta el hallazgo y resuélvelo si es necesario para completar correctamente el objetivo.
+- Antes de crear nuevas implementaciones, revisar todo el código existente para identificar servicios, repositorios y componentes que puedan reutilizarse.
+- No crear clases o interfaces adicionales sin una necesidad arquitectónica justificada.
+- No modificar innecesariamente los contratos públicos de las interfaces existentes.
+- No introducir lógica de negocio en los repositorios ni lógica de infraestructura en los casos de uso.
+- Mantener las convenciones de nombres, paquetes y arquitectura del proyecto.
+- Si alguna interfaz tiene responsabilidades incorrectamente definidas, documentar el problema y proponer el ajuste necesario antes de modificar su contrato.
+- No considerar una interfaz implementada únicamente porque exista una clase que la implemente: verificar que su comportamiento sea correcto y que esté integrada con los casos de uso.
 
