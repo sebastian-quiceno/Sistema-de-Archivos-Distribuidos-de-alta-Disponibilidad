@@ -66,11 +66,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(ITokenGenerator tokenGenerator, IUserRepository userRepository){
-        return new JwtAuthenticationFilter(tokenGenerator, userRepository);
-    }
-
-    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }

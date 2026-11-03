@@ -161,6 +161,19 @@
 
 - `Solucion:` **Pendiente**
 
+## [ ] 22. Implementar Rol Admin
+
+> [!CAUTION]
+> Actualmente, solo se tiene el rol de user, y se le da a cualquier usuario *authorized*, se debe implementar un usuario *Admin* para poder gestionoar y monitorear el sistema
+
+- `Solucion:` **Pendiente**
+
+## [ ] 23. Implementar el GlobalHandlerException
+
+> [!IMPORTANT]
+> ya esta creado, pero no abarca todas las *exception* del dominio, es mejor mapearlas para dar respuestas http acordes
+
+- `Solucion:` **Pendiente**
 
 
 Virgulilla: ~
