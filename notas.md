@@ -110,14 +110,12 @@
 
 - `Solucion:` Se segrego correctamente el `FileService`, ahora cumple con **Single Responsability**
 
-## [ ] 15. Quitar fachadas
+## [x] ~~15. Quitar fachadas~~
 
 > [!TIP]
 > Actualmente los metodos `ChunkReplicationService` y `ChunkStorageService` tienen metodos fachada, revisar hacen falta
 
-- `Solucion:` Se segrego correctamente el `FileService`, ahora cumple con **Single Responsability**
-
-
+- `Solucion:` Se opto por eliminarlas, no hacia falta tenerlas 
 
 ## [ ] 16. Cambiar tamaño chunks
 
@@ -138,8 +136,20 @@
 > [!TIP]
 > Revisar como configurarlo para que use una exceptino y no un IOException 
 
+- `Solucion:` **Pendiente**
+
+
 ## [ ] 19. Revisar Refactorizacion `lookOverIntegrity`
 
 > [!NOTE]
 > Revisar en que clase deberia ir el metodo `lookOverIntegrity`, si en `FileService` o en `ChunkStorageService`
 
+- `Solucion:` **Pendiente**
+
+
+## [ ] 20. Actualizar la base de datos
+
+> [!CAUTION]
+> La base de datos esta desactualizada respecto a las entidades del backend, actualiza principalmente `File`, ahora tiene el numero de la parte
+
+- `Solucion:` **Pendiente**
