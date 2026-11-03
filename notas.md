@@ -64,12 +64,12 @@
 - `Solucion:` **Pendiente**
 
 
-## [ ] 10. COREGIR BASE DE DATOS
+## [x] ~~10. COREGIR BASE DE DATOS~~
 
 > [!Caution]
 > Redefinir la base de datos, principalmente la Entidad nodo para que almacene los registros necesarios acorde a la funcionalidad
 
-- `Solucion:` **Pendiente**
+- `Solucion:` Ya se actualizo, revisar **nota 20**
 
 
 ## [ ] 11. ValueObjects
@@ -147,9 +147,20 @@
 - `Solucion:` **Pendiente**
 
 
-## [ ] 20. Actualizar la base de datos
+## [x] ~~20. Actualizar la base de datos~~
 
 > [!CAUTION]
 > La base de datos esta desactualizada respecto a las entidades del backend, actualiza principalmente `File`, ahora tiene el numero de la parte
 
+- `Solucion:` Ya se actualizo la base de datos respecto a lo implementado en el BackEnd. Se actualizaron las tablas y se crearon los procesos almacenados
+
+## [ ] 21. Revisar Exceptions en las nuevas clases de Seguridad
+
+> [!IMPORTANT]
+> La implementacion de las clases de Seguridad estan usando exception generales, no los especificos, se deberia manejar un mejor control de errores para estas clases con exception especializadas y especificas
+
 - `Solucion:` **Pendiente**
+
+
+
+Virgulilla: ~
