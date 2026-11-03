@@ -28,21 +28,40 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserCredentialsOutput> register(@RequestBody SignUpRequest request) {
-        if (request == null || request.username() == null || request.password() == null) {
-            throw new IllegalArgumentException("El nombre de usuario y la contraseña son obligatorios");
+        if (request == null) {
+            throw new IllegalArgumentException("El cuerpo de la solicitud no puede ser nulo");
         }
-        SignUpUserCommand command = new SignUpUserCommand(new UserName(request.username()), request.password());
+        if (request.username() == null || request.username().isBlank()) {
+            throw new IllegalArgumentException("El nombre de usuario es obligatorio");
+        }
+        if (request.password() == null || request.password().isBlank()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria");
+        }
+
+        SignUpUserCommand command = new SignUpUserCommand(
+                new UserName(request.username().strip()),
+                request.password()
+        );
         UserCredentialsOutput output = createNewUserUseCase.execute(command);
         return ResponseEntity.status(HttpStatus.CREATED).body(output);
     }
 
     @PostMapping("/login")
     public ResponseEntity<UserCredentialsOutput> login(@RequestBody SignInRequest request) {
-        if (request == null || request.username() == null || request.password() == null) {
-            throw new IllegalArgumentException("El nombre de usuario y la contraseña son obligatorios");
+        if (request == null) {
+            throw new IllegalArgumentException("El cuerpo de la solicitud no puede ser nulo");
         }
-        UserCredentialsOutput output = userLoginUseCase.execute(new UserName(request.username()), request.password());
+        if (request.username() == null || request.username().isBlank()) {
+            throw new IllegalArgumentException("El nombre de usuario es obligatorio");
+        }
+        if (request.password() == null || request.password().isBlank()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria");
+        }
+
+        UserCredentialsOutput output = userLoginUseCase.execute(
+                new UserName(request.username().strip()),
+                request.password()
+        );
         return ResponseEntity.ok(output);
     }
 }
-

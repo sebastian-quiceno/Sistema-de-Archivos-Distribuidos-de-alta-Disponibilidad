@@ -175,5 +175,11 @@
 
 - `Solucion:` **Pendiente**
 
+## [ ] 24. Revisar si hace falta tener *input-output* y *request-response*
+
+> [!NOTE]
+> Se tienen implementados ambos, pero solo se esta agregando una capa extra (se mappean directamente igual, sin cambios)
+
+- `Solucion:` **Pendiente**
 
 Virgulilla: ~
