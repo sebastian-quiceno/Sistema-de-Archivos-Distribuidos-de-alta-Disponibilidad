@@ -23,6 +23,25 @@ public class UpdateFileUseCase {
     }
 
     public void execute(UpdateFileCommand command) {
+        validateCommand(command);
+
+        UUID loggedUserId = currentUser.getUserId();
+
+        File file = fileRepository.getById(command.fileId()).orElseThrow(
+                () -> new FileNotFoundException("No se encontro el archivo con el id: '" + command.fileId() + "'")
+        );
+
+        if (!file.belongsToUser(loggedUserId)) {
+            throw new FileDoesNotBelongToUserException(
+                    "El archivo con el id: '" + command.fileId() + "' no pertenece al usuario con el id: '" + loggedUserId + "'"
+            );
+        }
+
+        fileUpdateService.updateFile(file, command.newFile(), command.newSize());
+    }
+
+    //TODO: revisar si dejar la validacion en el caso de uso o sacarla a una nueva clase
+    public void validateCommand(UpdateFileCommand command){
         if (command == null) {
             throw new IllegalArgumentException("El comando no puede ser nulo");
         }
@@ -38,20 +57,6 @@ public class UpdateFileUseCase {
         if (command.newSize() == null || command.newSize() < 0) {
             throw new IllegalArgumentException("El tamaño del archivo no puede ser nulo ni negativo");
         }
-
-        UUID loggedUserId = currentUser.getUserId();
-
-        File file = fileRepository.getById(command.fileId()).orElseThrow(
-                () -> new FileNotFoundException("No se encontro el archivo con el id: '" + command.fileId() + "'")
-        );
-
-        if (!file.belongsToUser(loggedUserId)) {
-            throw new FileDoesNotBelongToUserException(
-                    "El archivo con el id: '" + command.fileId() + "' no pertenece al usuario con el id: '" + loggedUserId + "'"
-            );
-        }
-
-        fileUpdateService.updateFile(file, command.newFile(), command.newSize());
     }
 }
 

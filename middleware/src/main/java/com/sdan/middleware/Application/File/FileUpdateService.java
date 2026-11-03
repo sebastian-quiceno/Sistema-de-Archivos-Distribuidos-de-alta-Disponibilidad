@@ -28,13 +28,7 @@ public class FileUpdateService implements IFileUpdateService {
     private final ChunkStorageService chunkStorageService;
     private final ChunkReplicationService chunkReplicationService;
 
-    public FileUpdateService(
-            IFileRepository fileRepository,
-            IChunkRepository chunkRepository,
-            FilePartitionService filePartitionService,
-            NodeAssignmentService nodeAssignmentService,
-            ChunkStorageService chunkStorageService,
-            ChunkReplicationService chunkReplicationService) {
+    public FileUpdateService(IFileRepository fileRepository, IChunkRepository chunkRepository, FilePartitionService filePartitionService, NodeAssignmentService nodeAssignmentService, ChunkStorageService chunkStorageService, ChunkReplicationService chunkReplicationService) {
         this.fileRepository = fileRepository;
         this.chunkRepository = chunkRepository;
         this.filePartitionService = filePartitionService;
@@ -55,20 +49,23 @@ public class FileUpdateService implements IFileUpdateService {
             throw new IllegalArgumentException("El tamaño del archivo no puede ser nulo ni negativo");
         }
 
-        // 1. Recopilar chunks originales y réplicas de la versión anterior antes de modificar nada
+        //Se van a obtener todos los chunks del archivo viejo(Incluidos las replicas)
         List<Chunk> oldOriginalChunks = chunkRepository.getFileChunks(file.getId());
         List<Chunk> oldAllChunks = new ArrayList<>();
+        List<Chunk> replicas;
+
         if (oldOriginalChunks != null) {
             for (Chunk oldOriginal : oldOriginalChunks) {
                 oldAllChunks.add(oldOriginal);
-                List<Chunk> replicas = chunkRepository.getReplicaNodes(oldOriginal.getId());
+                replicas = chunkRepository.getReplicaNodes(oldOriginal.getId());
+
                 if (replicas != null && !replicas.isEmpty()) {
                     oldAllChunks.addAll(replicas);
                 }
             }
         }
 
-        // 2 & 3. Particionar, almacenar nuevos chunks y sus réplicas en los nodos
+        //Se van a particionar, almacenar nuevos chunks y sus réplicas en los nodos
         int totalPartitions = filePartitionService.calculateTotalPartitions(newSize);
         Queue<UUID> nodeIds = nodeAssignmentService.getRandomNodeAssignments(totalPartitions);
 
@@ -85,19 +82,17 @@ public class FileUpdateService implements IFileUpdateService {
                 newOriginalChunks.add(chunk);
                 newAllChunks.add(chunk);
 
-                List<Chunk> replicas = chunkReplicationService.replicateFile(chunk, ChunkReplicationService.REPLICATION_FACTOR);
-                if (replicas != null && !replicas.isEmpty()) {
-                    newAllChunks.addAll(replicas);
+                List<Chunk> newReplicas = chunkReplicationService.replicateFile(chunk, ChunkReplicationService.REPLICATION_FACTOR);
+                if (newReplicas != null && !newReplicas.isEmpty()) {
+                    newAllChunks.addAll(newReplicas);
                 }
             });
 
-            // 4. Verificar que los nuevos chunks y sus réplicas se hayan almacenado correctamente
+            //Verificar que los nuevos chunks y sus réplicas se hayan almacenado correctamente
             for (Chunk chunk : newAllChunks) {
                 ChunkGetMethodOutput output = chunkStorageService.getChunk(chunk);
                 if (output == null || output.corrupted()) {
-                    throw new FileProcessingException(
-                            "Fallo de integridad o almacenamiento en el nuevo chunk: " + chunk.getId()
-                    );
+                    throw new FileProcessingException( "Fallo de integridad o almacenamiento en el nuevo chunk: " + chunk.getId());
                 }
             }
         } catch (Exception e) {
@@ -131,7 +126,7 @@ public class FileUpdateService implements IFileUpdateService {
             throw e;
         }
 
-        // 6. Confirmada la metadata, eliminar los chunks y réplicas de la versión anterior
+        // Confirmada la metadata, eliminar los chunks y réplicas de la versión anterior
         // Se prioriza la persistencia de la nueva versión; fallos en la limpieza no abortan la operación
         for (Chunk oldChunk : oldAllChunks) {
             try {
