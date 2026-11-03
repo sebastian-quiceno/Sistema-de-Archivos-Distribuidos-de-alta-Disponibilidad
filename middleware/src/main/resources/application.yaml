@@ -28,6 +28,5 @@ app:
 
 jwt:
   key:
-    secret: ${JWT_KEY}
-
-    ttl: ${EXPIRATION_TIME}
+    secret: ${JWT_KEY:sdan-dfs-ha-super-secret-jwt-key-2026-distributed-file-system-security}
+    ttl: ${EXPIRATION_TIME:86400000}

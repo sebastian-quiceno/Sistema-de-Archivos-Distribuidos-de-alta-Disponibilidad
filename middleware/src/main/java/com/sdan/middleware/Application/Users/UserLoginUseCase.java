@@ -7,9 +7,7 @@ import com.sdan.middleware.Application.Ports.Security.ITokenGenerator;
 import com.sdan.middleware.Domain.Entities.User;
 import com.sdan.middleware.Domain.Exceptions.Users.PasswordNotMatchException;
 import com.sdan.middleware.Domain.Exceptions.Users.UsernameNotFoundException;
-import com.sdan.middleware.Domain.ValueObjects.PasswordHash;
 import com.sdan.middleware.Domain.ValueObjects.UserName;
-
 
 public class UserLoginUseCase {
     private final IUserRepository userRepository;
@@ -28,16 +26,13 @@ public class UserLoginUseCase {
                 orElseThrow(
                         ()-> new UsernameNotFoundException("El nombre de usuario '"+userName+"' no existe")
                 );
-        PasswordHash passwordHash = new PasswordHash(passwordHasher.Hash(password));
 
-        if(passwordHash.equals(dbUser.getPasswordHash()))
+        if(!passwordHasher.Verify(password, dbUser.getPasswordHash().getValue()))
             throw new PasswordNotMatchException("Contraseña incorrecta");
 
         String token = tokenGenerator.Generate(dbUser);
 
         return new UserCredentialsOutput(dbUser.getId(), dbUser.getUsername(), token);
-
-
     }
 
 }

@@ -51,7 +51,7 @@ Repositories/
 - Los repositorios están correctamente integrados con los casos de uso existentes.
 
 
-## 2\. Interfaces de seguridad
+## 2. Interfaces de seguridad
 
 Implementar y configurar las siguientes interfaces:
 
