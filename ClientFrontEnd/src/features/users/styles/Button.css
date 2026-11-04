@@ -1,0 +1,16 @@
+.btn{
+  background-color: var(--bg-color, #007bff);
+  color: var(--text-color, #ffffff);
+  
+  /* Tus estilos fijos del botón */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: opacity 0.2s ease;
+}
+
+.btn-dinamico:hover {
+  opacity: 0.9;
+}
