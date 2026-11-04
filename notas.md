@@ -182,4 +182,11 @@
 
 - `Solucion:` **Pendiente**
 
+## [ ] 25. eliminar una carpeta deja TODOS los archivos basura
+
+> [!CAUTION]
+> Al eliminarse una carpeta, solo se esta eliminando la carpeta, no los archivos que tiene adentro, por lo que se esta dejando huerfanos todos los archivos, generando basura 
+
+- `Solucion:` **Pendiente**
+
 Virgulilla: ~
