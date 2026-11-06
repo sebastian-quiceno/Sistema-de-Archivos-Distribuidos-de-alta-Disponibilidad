@@ -1,0 +1,50 @@
+:root {
+  --color-default-icon-white: #ff0000;
+  --color-writte-icon: #FFFFFF;
+  --color-download-icon: #CAF4B1;
+  --color-delete-icon: #f96464;
+
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.acction-button {
+  width: 100%;
+  height: 100%;
+
+  background: none;
+  border: none;
+
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.action-svg {
+  max-height: 100%;
+
+  fill: none;
+  stroke: var(--color-delete-icon);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.action-svg__write {
+  stroke: var(--color-writte-icon);
+}
+
+.action-svg__download {
+  stroke: var(--color-download-icon);
+}
+
+.action-svg__delete {
+  stroke: var(--color-delete-icon);
+}
+
+.profile__button:hover {
+  transform: scale(1.05);
+}

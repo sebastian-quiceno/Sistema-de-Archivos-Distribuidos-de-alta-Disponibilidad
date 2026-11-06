@@ -32,7 +32,7 @@ public class UserLoginUseCase {
 
         String token = tokenGenerator.Generate(dbUser);
 
-        return new UserCredentialsOutput(dbUser.getId(), dbUser.getUsername(), token);
+        return new UserCredentialsOutput(dbUser.getId(), dbUser.getUsername().getValue(), token);
     }
 
 }

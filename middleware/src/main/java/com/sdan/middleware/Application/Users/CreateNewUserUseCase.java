@@ -33,7 +33,6 @@ public class CreateNewUserUseCase {
 
         String token = tokenGenerator.Generate(newuser);
 
-        return new UserCredentialsOutput(newuser.getId(), newuser.getUsername(), token);
+        return new UserCredentialsOutput(newuser.getId(), newuser.getUsername().getValue(), token);
     }
-
 }

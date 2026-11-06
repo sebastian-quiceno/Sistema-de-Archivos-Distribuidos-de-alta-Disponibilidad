@@ -38,6 +38,8 @@ public class AuthController {
             throw new IllegalArgumentException("La contraseña es obligatoria");
         }
 
+        System.out.println("credenciales: \n"+ "Contraseña: "+request.password() +"\n Usuario:" +request.username());
+
         SignUpUserCommand command = new SignUpUserCommand(
                 new UserName(request.username().strip()),
                 request.password()

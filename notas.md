@@ -189,4 +189,9 @@
 
 - `Solucion:` **Pendiente**
 
+## [ ] 26. Arreglar coliciones de varialbes (FrontEnd)
+
+> [!WARNING]
+> El FrontEnd esta teniendo bugs porque en los `CSS` se estan repitiendo nombres de variables, lo que esta causando problemas y coliciones. 
+
 Virgulilla: ~

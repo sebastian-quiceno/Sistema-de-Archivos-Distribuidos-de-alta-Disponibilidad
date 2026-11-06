@@ -1,5 +1,5 @@
 :root {
-  --color-backgroundd: #24252e;
+  --color-input-background: #24252e;
   --color-secondary: #b3badd;
   --color-secondary-hover: #276ad6;
   --color-beige: #f6ecde;
@@ -50,7 +50,7 @@ legend {
   left: 0.8rem;
   transform: translateY(-50%);
   font-size: 0.85rem;
-  background-color: var(--color-backgroundd);
+  background-color: var(--color-input-background);
   color: var(--color-gray);
   transition: 300ms;
   padding: 0 0.2rem;
