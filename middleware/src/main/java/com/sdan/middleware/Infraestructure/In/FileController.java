@@ -1,13 +1,10 @@
 package com.sdan.middleware.Infraestructure.In;
 
-import com.sdan.middleware.Application.File.CheckFilesUseCase;
-import com.sdan.middleware.Application.File.DeleteFileUseCase;
-import com.sdan.middleware.Application.File.GetFileUseCase;
-import com.sdan.middleware.Application.File.UpdateFileUseCase;
-import com.sdan.middleware.Application.File.UploadFileUseCase;
+import com.sdan.middleware.Application.File.*;
 import com.sdan.middleware.Application.Inputs.Commands.CreateFileCommand;
 import com.sdan.middleware.Application.Inputs.Commands.UpdateFileCommand;
 import com.sdan.middleware.Application.Outputs.IntegrityCheckReport;
+import com.sdan.middleware.Application.Outputs.MetadataFileOutput;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,18 +36,15 @@ public class FileController {
     private final UpdateFileUseCase updateFileUseCase;
     private final DeleteFileUseCase deleteFileUseCase;
     private final CheckFilesUseCase checkFilesUseCase;
+    private final GetMetadataFileUseCase getMetadataFileUseCase;
 
-    public FileController(
-            UploadFileUseCase uploadFileUseCase,
-            GetFileUseCase getFileUseCase,
-            UpdateFileUseCase updateFileUseCase,
-            DeleteFileUseCase deleteFileUseCase,
-            CheckFilesUseCase checkFilesUseCase) {
+    public FileController(UploadFileUseCase uploadFileUseCase, GetFileUseCase getFileUseCase, UpdateFileUseCase updateFileUseCase, DeleteFileUseCase deleteFileUseCase, CheckFilesUseCase checkFilesUseCase, GetMetadataFileUseCase getMetadataFileUseCase) {
         this.uploadFileUseCase = uploadFileUseCase;
         this.getFileUseCase = getFileUseCase;
         this.updateFileUseCase = updateFileUseCase;
         this.deleteFileUseCase = deleteFileUseCase;
         this.checkFilesUseCase = checkFilesUseCase;
+        this.getMetadataFileUseCase = getMetadataFileUseCase;
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -58,7 +52,7 @@ public class FileController {
     public ResponseEntity<Void> uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam("folderId") UUID folderId,
-            @RequestParam("fileTypeId") UUID fileTypeId,
+            @RequestParam("fileTypeName") String fileTypeName,
             @RequestParam(value = "name", required = false) String name) throws IOException {
 
         if (file == null || file.isEmpty()) {
@@ -67,7 +61,7 @@ public class FileController {
         if (folderId == null) {
             throw new IllegalArgumentException("El identificador de la carpeta es obligatorio");
         }
-        if (fileTypeId == null) {
+        if (fileTypeName == null) {
             throw new IllegalArgumentException("El tipo de archivo es obligatorio");
         }
 
@@ -79,7 +73,7 @@ public class FileController {
         try (InputStream is = file.getInputStream()) {
             CreateFileCommand command = new CreateFileCommand(
                     folderId,
-                    fileTypeId,
+                    fileTypeName,
                     resolvedName,
                     is,
                     file.getSize()
@@ -88,6 +82,19 @@ public class FileController {
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('files.read')")
+    public ResponseEntity<MetadataFileOutput> getMetadataFile(@PathVariable("id") UUID id){
+        if (id == null) {
+            throw new IllegalArgumentException("El identificador del archivo no puede ser nulo");
+        }
+
+        MetadataFileOutput output = getMetadataFileUseCase.execute(id);
+
+        return ResponseEntity.ok(output);
+
     }
 
     @GetMapping("/{id}/download")

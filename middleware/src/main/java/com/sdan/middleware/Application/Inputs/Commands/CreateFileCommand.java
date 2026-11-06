@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public record CreateFileCommand(
         UUID folderId,
-        UUID fileTypeId,
+        String fileTypeName,
         String name,
         InputStream file,
         Long size

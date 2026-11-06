@@ -3,11 +3,13 @@ package com.sdan.middleware.Infraestructure.In;
 import com.sdan.middleware.Application.File.CheckFilesUseCase;
 import com.sdan.middleware.Application.File.DeleteFileUseCase;
 import com.sdan.middleware.Application.File.GetFileUseCase;
+import com.sdan.middleware.Application.File.GetMetadataFileUseCase;
 import com.sdan.middleware.Application.File.UpdateFileUseCase;
 import com.sdan.middleware.Application.File.UploadFileUseCase;
 import com.sdan.middleware.Application.Inputs.Commands.CreateFileCommand;
 import com.sdan.middleware.Application.Inputs.Commands.UpdateFileCommand;
 import com.sdan.middleware.Application.Outputs.IntegrityCheckReport;
+import com.sdan.middleware.Application.Outputs.MetadataFileOutput;
 import com.sdan.middleware.Domain.Exceptions.File.FileDoesNotBelongToUserException;
 import com.sdan.middleware.Domain.Exceptions.File.FileNotFoundException;
 import com.sdan.middleware.Domain.Exceptions.FileType.FileTypeNotFoundException;
@@ -68,6 +70,9 @@ class FileControllerTest {
     @Mock
     private CheckFilesUseCase checkFilesUseCase;
 
+    @Mock
+    private GetMetadataFileUseCase getMetadataFileUseCase;
+
     @InjectMocks
     private FileController fileController;
 
@@ -83,7 +88,6 @@ class FileControllerTest {
     @DisplayName("POST /api/files/upload exitoso retorna 201 Created")
     void uploadFile_withValidData_returns201Created() throws Exception {
         UUID folderId = UUID.randomUUID();
-        UUID fileTypeId = UUID.randomUUID();
         MockMultipartFile file = new MockMultipartFile(
                 "file",
                 "test-document.pdf",
@@ -96,7 +100,7 @@ class FileControllerTest {
         mockMvc.perform(multipart("/api/files/upload")
                         .file(file)
                         .param("folderId", folderId.toString())
-                        .param("fileTypeId", fileTypeId.toString())
+                        .param("fileTypeName", "pdf")
                         .param("name", "custom_name.pdf"))
                 .andExpect(status().isCreated());
 
@@ -107,7 +111,6 @@ class FileControllerTest {
     @DisplayName("POST /api/files/upload con archivo vacío retorna 400 Bad Request")
     void uploadFile_withEmptyFile_returns400BadRequest() throws Exception {
         UUID folderId = UUID.randomUUID();
-        UUID fileTypeId = UUID.randomUUID();
         MockMultipartFile emptyFile = new MockMultipartFile(
                 "file",
                 "empty.txt",
@@ -118,7 +121,7 @@ class FileControllerTest {
         mockMvc.perform(multipart("/api/files/upload")
                         .file(emptyFile)
                         .param("folderId", folderId.toString())
-                        .param("fileTypeId", fileTypeId.toString()))
+                        .param("fileTypeName", "txt"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.error").value("Bad Request"));
@@ -128,7 +131,6 @@ class FileControllerTest {
     @DisplayName("POST /api/files/upload en carpeta inexistente retorna 404 Not Found")
     void uploadFile_whenFolderNotFound_returns404NotFound() throws Exception {
         UUID folderId = UUID.randomUUID();
-        UUID fileTypeId = UUID.randomUUID();
         MockMultipartFile file = new MockMultipartFile(
                 "file", "doc.pdf", MediaType.APPLICATION_PDF_VALUE, "data".getBytes()
         );
@@ -139,7 +141,7 @@ class FileControllerTest {
         mockMvc.perform(multipart("/api/files/upload")
                         .file(file)
                         .param("folderId", folderId.toString())
-                        .param("fileTypeId", fileTypeId.toString()))
+                        .param("fileTypeName", "pdf"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Not Found"));
@@ -149,7 +151,6 @@ class FileControllerTest {
     @DisplayName("POST /api/files/upload en carpeta ajena retorna 403 Forbidden")
     void uploadFile_whenFolderNotOwned_returns403Forbidden() throws Exception {
         UUID folderId = UUID.randomUUID();
-        UUID fileTypeId = UUID.randomUUID();
         MockMultipartFile file = new MockMultipartFile(
                 "file", "doc.pdf", MediaType.APPLICATION_PDF_VALUE, "data".getBytes()
         );
@@ -160,7 +161,7 @@ class FileControllerTest {
         mockMvc.perform(multipart("/api/files/upload")
                         .file(file)
                         .param("folderId", folderId.toString())
-                        .param("fileTypeId", fileTypeId.toString()))
+                        .param("fileTypeName", "pdf"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.status").value(403))
                 .andExpect(jsonPath("$.error").value("Forbidden"));
@@ -170,7 +171,6 @@ class FileControllerTest {
     @DisplayName("POST /api/files/upload con tipo inexistente retorna 404 Not Found")
     void uploadFile_whenFileTypeNotFound_returns404NotFound() throws Exception {
         UUID folderId = UUID.randomUUID();
-        UUID fileTypeId = UUID.randomUUID();
         MockMultipartFile file = new MockMultipartFile(
                 "file", "doc.pdf", MediaType.APPLICATION_PDF_VALUE, "data".getBytes()
         );
@@ -181,9 +181,60 @@ class FileControllerTest {
         mockMvc.perform(multipart("/api/files/upload")
                         .file(file)
                         .param("folderId", folderId.toString())
-                        .param("fileTypeId", fileTypeId.toString()))
+                        .param("fileTypeName", "unknown"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
+    }
+
+    @Test
+    @DisplayName("GET /api/files/{id} exitoso retorna 200 OK con metadatos del archivo")
+    void getMetadataFile_withValidId_returns200OkWithMetadata() throws Exception {
+        UUID fileId = UUID.randomUUID();
+        UUID folderId = UUID.randomUUID();
+        MetadataFileOutput output = new MetadataFileOutput(
+                fileId,
+                folderId,
+                "pdf",
+                "reporte.pdf",
+                1024L,
+                1,
+                new java.util.Date()
+        );
+
+        when(getMetadataFileUseCase.execute(fileId)).thenReturn(output);
+
+        mockMvc.perform(get("/api/files/{id}", fileId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(fileId.toString()))
+                .andExpect(jsonPath("$.folderId").value(folderId.toString()))
+                .andExpect(jsonPath("$.fileTypeName").value("pdf"))
+                .andExpect(jsonPath("$.fileName").value("reporte.pdf"))
+                .andExpect(jsonPath("$.bytesSize").value(1024))
+                .andExpect(jsonPath("$.totalPartitions").value(1));
+    }
+
+    @Test
+    @DisplayName("GET /api/files/{id} cuando archivo no existe retorna 404 Not Found")
+    void getMetadataFile_whenNotFound_returns404NotFound() throws Exception {
+        UUID fileId = UUID.randomUUID();
+        when(getMetadataFileUseCase.execute(fileId))
+                .thenThrow(new FileNotFoundException("No se encontro el archivo con el id: " + fileId));
+
+        mockMvc.perform(get("/api/files/{id}", fileId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404));
+    }
+
+    @Test
+    @DisplayName("GET /api/files/{id} cuando archivo es ajeno retorna 403 Forbidden")
+    void getMetadataFile_whenNotOwned_returns403Forbidden() throws Exception {
+        UUID fileId = UUID.randomUUID();
+        when(getMetadataFileUseCase.execute(fileId))
+                .thenThrow(new FileDoesNotBelongToUserException("El archivo no pertenece al usuario"));
+
+        mockMvc.perform(get("/api/files/{id}", fileId))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.status").value(403));
     }
 
     @Test

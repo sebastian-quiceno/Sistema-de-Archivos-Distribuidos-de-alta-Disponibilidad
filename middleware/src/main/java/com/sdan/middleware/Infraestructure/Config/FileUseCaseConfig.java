@@ -1,19 +1,6 @@
 package com.sdan.middleware.Infraestructure.Config;
 
-import com.sdan.middleware.Application.File.CheckFilesUseCase;
-import com.sdan.middleware.Application.File.ChunkReplicationService;
-import com.sdan.middleware.Application.File.ChunkStorageService;
-import com.sdan.middleware.Application.File.DeleteFileUseCase;
-import com.sdan.middleware.Application.File.FileDeletionService;
-import com.sdan.middleware.Application.File.FileIntegrityService;
-import com.sdan.middleware.Application.File.FilePartitionService;
-import com.sdan.middleware.Application.File.FileReconstructionService;
-import com.sdan.middleware.Application.File.FileService;
-import com.sdan.middleware.Application.File.FileUpdateService;
-import com.sdan.middleware.Application.File.GetFileUseCase;
-import com.sdan.middleware.Application.File.NodeAssignmentService;
-import com.sdan.middleware.Application.File.UpdateFileUseCase;
-import com.sdan.middleware.Application.File.UploadFileUseCase;
+import com.sdan.middleware.Application.File.*;
 import com.sdan.middleware.Application.Ports.Repositories.IChunkRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IFileTypeRepository;
@@ -163,5 +150,13 @@ public class FileUseCaseConfig {
             IFileIntegrityService fileIntegrityService) {
         return new CheckFilesUseCase(fileRepository, fileIntegrityService);
     }
+
+    @Bean
+    public GetMetadataFileUseCase getMetadataFileUseCase(
+            ICurrentUser currentUser,
+            IFileRepository fileRepository) {
+        return new GetMetadataFileUseCase(currentUser, fileRepository);
+    }
+
 }
 

@@ -1,14 +1,13 @@
 package com.sdan.middleware.Infraestructure.In;
 
-import com.sdan.middleware.Application.Folder.CreateFolderUseCase;
-import com.sdan.middleware.Application.Folder.DeleteFolderUseCase;
-import com.sdan.middleware.Application.Folder.GetFoldersByFatherFolderUseCase;
-import com.sdan.middleware.Application.Folder.MoveFolderUserCase;
+import com.sdan.middleware.Application.Folder.*;
 import com.sdan.middleware.Application.Inputs.Commands.CreateFolderCommand;
 import com.sdan.middleware.Application.Inputs.Commands.MoveFolderCommand;
 import com.sdan.middleware.Application.Outputs.FolderOutput;
+import com.sdan.middleware.Application.Outputs.RenameFolderCommand;
 import com.sdan.middleware.Infraestructure.In.DTOs.Request.CreateFolderRequest;
 import com.sdan.middleware.Infraestructure.In.DTOs.Request.MoveFolderRequest;
+import com.sdan.middleware.Infraestructure.In.DTOs.Request.RenameFolderRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,16 +24,18 @@ public class FolderController {
     private final GetFoldersByFatherFolderUseCase getFoldersByFatherFolderUseCase;
     private final MoveFolderUserCase moveFolderUserCase;
     private final DeleteFolderUseCase deleteFolderUseCase;
+    private final RenameFolderUseCase renameFolderUseCase;
 
     public FolderController(
             CreateFolderUseCase createFolderUseCase,
             GetFoldersByFatherFolderUseCase getFoldersByFatherFolderUseCase,
             MoveFolderUserCase moveFolderUserCase,
-            DeleteFolderUseCase deleteFolderUseCase) {
+            DeleteFolderUseCase deleteFolderUseCase, RenameFolderUseCase renameFolderUseCase) {
         this.createFolderUseCase = createFolderUseCase;
         this.getFoldersByFatherFolderUseCase = getFoldersByFatherFolderUseCase;
         this.moveFolderUserCase = moveFolderUserCase;
         this.deleteFolderUseCase = deleteFolderUseCase;
+        this.renameFolderUseCase = renameFolderUseCase;
     }
 
     @PostMapping
@@ -77,6 +78,22 @@ public class FolderController {
         UUID newFatherFolderId = request != null ? request.newFatherFolderId() : null;
         MoveFolderCommand command = new MoveFolderCommand(id, newFatherFolderId);
         moveFolderUserCase.execute(command);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/rename")
+    @PreAuthorize("hasAuthority('folders.update')")
+    public ResponseEntity<Void> renameFolder(
+            @PathVariable("id") UUID id,
+            @RequestBody(required = false) RenameFolderRequest request) {
+        if (id == null) {
+            throw new IllegalArgumentException("El identificador de la carpeta no puede ser nulo");
+        }
+
+        RenameFolderCommand command = new RenameFolderCommand(id, request.newFolderName());
+
+        renameFolderUseCase.execute(command);
+
         return ResponseEntity.noContent().build();
     }
 

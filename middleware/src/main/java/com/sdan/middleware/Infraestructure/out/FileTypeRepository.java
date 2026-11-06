@@ -2,6 +2,7 @@ package com.sdan.middleware.Infraestructure.out;
 
 import com.sdan.middleware.Application.Ports.Repositories.IFileTypeRepository;
 import com.sdan.middleware.Domain.Entities.FileType;
+import com.sdan.middleware.Domain.Exceptions.FileType.FileTypeNotFoundException;
 import com.sdan.middleware.Infraestructure.out.Entities.FileTypeEntity;
 import com.sdan.middleware.Infraestructure.out.Mappers.FileTypeMapper;
 import com.sdan.middleware.Infraestructure.out.SpringData.SpringDataFileTypeRepository;
@@ -27,6 +28,15 @@ public class FileTypeRepository implements IFileTypeRepository {
             return Optional.empty();
         }
         return springDataFileTypeRepository.findById(id).map(fileTypeMapper::toDomain);
+    }
+
+    @Override
+    public Optional<FileType> getByName(String name) {
+        FileTypeEntity type = springDataFileTypeRepository.findByName(name).orElseThrow(
+                ()-> new FileTypeNotFoundException("No se encontro el tipo de archivo con el nombre: "+name)
+        );
+
+        return Optional.ofNullable(fileTypeMapper.toDomain(type));
     }
 
     @Override

@@ -41,8 +41,8 @@ public class UploadFileUseCase {
                     "No se puede subir el archivo porque la carpeta con el id: '"+dto.folderId()+"' no pertenece al usuario con el id: '"+loggedUser+"'"
             );
 
-        FileType fileType = fileTypeRepository.getById(dto.fileTypeId()).orElseThrow(
-                ()-> new FileTypeNotFoundException("No se encontro el FileType con el id: '"+dto.fileTypeId()+"'")
+        FileType fileType = fileTypeRepository.getByName(dto.fileTypeName()).orElseThrow(
+                ()-> new FileTypeNotFoundException("No se encontro el FileType con el id: '"+dto.fileTypeName()+"'")
         );
 
         FileName fileName = new FileName(dto.name());

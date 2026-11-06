@@ -1,9 +1,6 @@
 package com.sdan.middleware.Infraestructure.Config;
 
-import com.sdan.middleware.Application.Folder.CreateFolderUseCase;
-import com.sdan.middleware.Application.Folder.DeleteFolderUseCase;
-import com.sdan.middleware.Application.Folder.GetFoldersByFatherFolderUseCase;
-import com.sdan.middleware.Application.Folder.MoveFolderUserCase;
+import com.sdan.middleware.Application.Folder.*;
 import com.sdan.middleware.Application.Ports.Repositories.IFolderRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IUserRepository;
 import com.sdan.middleware.Application.Ports.Security.ICurrentUser;
@@ -36,10 +33,14 @@ public class FolderUseCaseConfig {
     }
 
     @Bean
-    public MoveFolderUserCase moveFolderUserCase(
-            IFolderRepository folderRepository,
+    public MoveFolderUserCase moveFolderUserCase(IFolderRepository folderRepository,
             ICurrentUser currentUser) {
         return new MoveFolderUserCase(folderRepository, currentUser);
+    }
+
+    @Bean
+    public RenameFolderUseCase renameFolderUseCase(IFolderRepository folderRepository, ICurrentUser currentUser){
+        return new RenameFolderUseCase(folderRepository, currentUser);
     }
 }
 

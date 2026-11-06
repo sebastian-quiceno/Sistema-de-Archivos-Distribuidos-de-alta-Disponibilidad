@@ -9,6 +9,8 @@ public interface IFileTypeRepository {
 
     Optional<FileType> getById(UUID id);
 
+    Optional<FileType> getByName(String name);
+
     void save(FileType fileType);
 
     void deleteById(UUID id);
