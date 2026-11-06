@@ -1,16 +1,20 @@
 import { useState } from "react";
-import "../styles/LoginInput.css";
+import "../../styles/user/LoginInput.css";
 
 interface LoginInputProps {
   text: string;
   placeholder?: string; // Opcional
   isPassword: boolean;
+  isWrong?: boolean;
+  onchange: (event: string) => void;
 }
 
 function LoginInput({
   text,
   placeholder = "Sin descripción",
   isPassword,
+  isWrong,
+  onchange,
 }: LoginInputProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(isPassword);
@@ -18,6 +22,9 @@ function LoginInput({
   return (
     <div className="form-item">
       <input
+        className={
+          isWrong ? "form__input form__input--wrong" : "form__input"
+        }
         type={showPassword ? "password" : "text"}
         name="login"
         placeholder={isFocused ? placeholder : ""}
@@ -25,9 +32,12 @@ function LoginInput({
         onBlur={() => setIsFocused(false)}
         required
         autoComplete="off"
+        onChange={(event) => onchange(event.target.value)}
       />
       <label>{text}</label>
       {isPassword ? SeePasswordButton(showPassword, setShowPassword) : null}
+
+      {isWrong ? <p className="wrong-message">La contraseña es incorrecta</p> : null}
     </div>
   );
 }
@@ -57,7 +67,6 @@ const SeePasswordButton = (
           <path d="m4 15 1.726-2.05" />
           <path d="m9 18 .722-3.25" />
         </svg>
-        
       ) : (
         <svg
           xmlns="http://www.w3.org/2000/svg"

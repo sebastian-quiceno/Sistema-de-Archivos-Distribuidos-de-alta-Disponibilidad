@@ -1,17 +1,19 @@
 import React from "react";
-import "../styles/Button.css";
+import "../../styles/user/Button.css";
 
 interface BotonProps {
   text: string;
   backgroundColor?: string;
   fontColor: string;
-  onClick: () => void;
+  isSubmit?: boolean;
+  onClick?: () => void;
 }
 
 export const Button = ({
   text,
   backgroundColor,
   fontColor,
+  isSubmit,
   onClick,
 }: BotonProps) => {
 
@@ -20,7 +22,8 @@ export const Button = ({
   return (
     <button
       className="btn"
-      onClick={onClick}
+      onClick={onClick? onClick: ( () => null )} 
+      type={(isSubmit === null || isSubmit === false)? "button": "submit"}
       style={
         {
           "--bg-color": finalBackground,

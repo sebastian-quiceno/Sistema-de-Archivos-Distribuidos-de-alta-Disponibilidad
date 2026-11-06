@@ -4,6 +4,7 @@
   --color-secondary-hover: #276ad6;
   --color-beige: #f6ecde;
   --color-hover-beige: #cbb494;
+  --color-wrong-red: #ee6a6a;
   --color-gray: #80808a;
   --color-shadow: #80808080;
   --color-border-light: #454652;
@@ -25,17 +26,22 @@ legend {
   height: 60px;
 }
 
-.form-item input {
+.form__input {
   width: 100%;
   height: 100%;
   padding: 1rem;
   background: none;
+  color: var(--color-beige);
   font-size: 1rem;
   border: 1px solid var(--color-border-light);
   border-radius: 0.5rem;
   outline: none;
   position: relative;
   z-index: 1;
+}
+
+.form__input--wrong {
+  border: 1px solid var(--color-wrong-red);
 }
 
 .form-item label {
@@ -95,4 +101,9 @@ legend {
 .btn-svg:hover {
   stroke: var(--color-hover-beige);
   transform: translateY(-50%) scale(1.05);
+}
+
+.wrong-message{
+  color: var(--color-wrong-red);
+  font-size: 1rem;
 }
