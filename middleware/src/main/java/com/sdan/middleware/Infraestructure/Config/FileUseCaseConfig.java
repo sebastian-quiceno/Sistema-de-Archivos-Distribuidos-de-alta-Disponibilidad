@@ -1,6 +1,7 @@
 package com.sdan.middleware.Infraestructure.Config;
 
 import com.sdan.middleware.Application.File.*;
+import com.sdan.middleware.Application.Ports.Messaging.IMessageQueuePort;
 import com.sdan.middleware.Application.Ports.Repositories.IChunkRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IFileTypeRepository;
@@ -55,14 +56,16 @@ public class FileUseCaseConfig {
             FilePartitionService filePartitionService,
             NodeAssignmentService nodeAssignmentService,
             ChunkStorageService chunkStorageService,
-            ChunkReplicationService chunkReplicationService) {
+            ChunkReplicationService chunkReplicationService,
+            @Autowired(required = false) IMessageQueuePort messageQueuePort) {
         return new FileService(
                 fileRepository,
                 chunkRepository,
                 filePartitionService,
                 nodeAssignmentService,
                 chunkStorageService,
-                chunkReplicationService
+                chunkReplicationService,
+                messageQueuePort
         );
     }
 
@@ -70,8 +73,9 @@ public class FileUseCaseConfig {
     public FileReconstructionService fileReconstructionService(
             IChunkRepository chunkRepository,
             IFileRepository fileRepository,
-            ChunkStorageService chunkStorageService) {
-        return new FileReconstructionService(chunkRepository, fileRepository, chunkStorageService);
+            ChunkStorageService chunkStorageService,
+            @Autowired(required = false) IMessageQueuePort messageQueuePort) {
+        return new FileReconstructionService(chunkRepository, fileRepository, chunkStorageService, messageQueuePort);
     }
 
     @Bean
@@ -96,8 +100,9 @@ public class FileUseCaseConfig {
     public FileDeletionService fileDeletionService(
             IFileRepository fileRepository,
             IChunkRepository chunkRepository,
-            ChunkStorageService chunkStorageService) {
-        return new FileDeletionService(fileRepository, chunkRepository, chunkStorageService);
+            ChunkStorageService chunkStorageService,
+            @Autowired(required = false) IMessageQueuePort messageQueuePort) {
+        return new FileDeletionService(fileRepository, chunkRepository, chunkStorageService, messageQueuePort);
     }
 
     @Bean

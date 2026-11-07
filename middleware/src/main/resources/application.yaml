@@ -4,8 +4,8 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: ${MAX-FILE-SIZE}
-      max-request-size: ${MAX-REQUEST-SIZE}
+      max-file-size: ${MAX-FILE-SIZE:500MB}
+      max-request-size: ${MAX-REQUEST-SIZE:500MB}
 
   config:
     import: optional:file:.env[.properties]
@@ -13,18 +13,32 @@ spring:
   application:
     name: middleware
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        acknowledge-mode: auto
+        prefetch: 1
+        concurrency: 2
+        max-concurrency: 5
+        default-requeue-rejected: true
+        missing-queues-fatal: false
+
 app:
   aws:
-    region: ${AWS_REGION}
+    region: ${AWS_REGION:us-east-1}
 
-    access-key-id: ${AWS_ACCESS_KEY_ID}
+    access-key-id: ${AWS_ACCESS_KEY_ID:test-access-key}
 
-    secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY:test-secret-key}
 
-    session-token: ${AWS_SESSION_TOKEN}
+    session-token: ${AWS_SESSION_TOKEN:test-session-token}
 
     s3:
-      bucket: ${S3_BUCKET_NAME}
+      bucket: ${S3_BUCKET_NAME:test-bucket}
 
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}

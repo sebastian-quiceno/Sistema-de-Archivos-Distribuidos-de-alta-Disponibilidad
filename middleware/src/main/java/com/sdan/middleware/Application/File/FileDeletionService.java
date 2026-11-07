@@ -1,5 +1,7 @@
 package com.sdan.middleware.Application.File;
 
+import com.sdan.middleware.Application.Inputs.Messages.PurgeChunkMessage;
+import com.sdan.middleware.Application.Ports.Messaging.IMessageQueuePort;
 import com.sdan.middleware.Application.Ports.Repositories.IChunkRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
 import com.sdan.middleware.Application.Ports.Storage.IFileDeletionService;
@@ -14,11 +16,21 @@ public class FileDeletionService implements IFileDeletionService {
     private final IFileRepository fileRepository;
     private final IChunkRepository chunkRepository;
     private final ChunkStorageService chunkStorageService;
+    private final IMessageQueuePort messageQueuePort;
 
     public FileDeletionService(IFileRepository fileRepository, IChunkRepository chunkRepository, ChunkStorageService chunkStorageService) {
+        this(fileRepository, chunkRepository, chunkStorageService, null);
+    }
+
+    public FileDeletionService(
+            IFileRepository fileRepository,
+            IChunkRepository chunkRepository,
+            ChunkStorageService chunkStorageService,
+            IMessageQueuePort messageQueuePort) {
         this.fileRepository = fileRepository;
         this.chunkRepository = chunkRepository;
         this.chunkStorageService = chunkStorageService;
+        this.messageQueuePort = messageQueuePort;
     }
 
     @Override
@@ -49,10 +61,18 @@ public class FileDeletionService implements IFileDeletionService {
 
         fileRepository.deleteById(file.getId());
 
-        // Se va a intentar eliminar los chunks físicos de los nodos de almacenamiento
+        // Se encola la purga física en MOM (RabbitMQ) o se ejecuta directamente si MOM no está activo
         for (Chunk chunk : allChunksToDelete) {
             try {
-                chunkStorageService.deleteChunk(chunk);
+                if (messageQueuePort != null && chunk.getNode() != null && chunk.getKey() != null) {
+                    messageQueuePort.publishPurgeTask(new PurgeChunkMessage(
+                            chunk.getNode().getName().getValue(),
+                            chunk.getNode().getRegionName().getValue(),
+                            chunk.getKey().getValue()
+                    ));
+                } else {
+                    chunkStorageService.deleteChunk(chunk);
+                }
             } catch (Exception ignored) {
                 // Se captura el fallo individual para no interrumpir la limpieza de los demás nodos
             }

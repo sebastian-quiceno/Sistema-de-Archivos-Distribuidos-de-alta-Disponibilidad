@@ -65,7 +65,7 @@ class SecurityEndpointsIntegrationTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.userId").isNotEmpty())
-                .andExpect(jsonPath("$.userName.value").value(uniqueUsername))
+                .andExpect(jsonPath("$.userName").value(uniqueUsername))
                 .andExpect(jsonPath("$.token").isNotEmpty());
     }
 
@@ -88,7 +88,7 @@ class SecurityEndpointsIntegrationTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(user.getId().toString()))
-                .andExpect(jsonPath("$.userName.value").value(uniqueUsername))
+                .andExpect(jsonPath("$.userName").value(uniqueUsername))
                 .andExpect(jsonPath("$.token").isNotEmpty());
     }
 

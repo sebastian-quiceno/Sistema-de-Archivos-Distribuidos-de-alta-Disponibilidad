@@ -48,7 +48,7 @@ class CreateNewUserUseCaseTest {
         UserCredentialsOutput output = createNewUserUseCase.execute(command);
 
         assertNotNull(output);
-        assertEquals("newuser", output.userName().getValue());
+        assertEquals("newuser", output.userName());
         assertEquals("mockJwtToken", output.token());
         assertNotNull(output.userId());
 

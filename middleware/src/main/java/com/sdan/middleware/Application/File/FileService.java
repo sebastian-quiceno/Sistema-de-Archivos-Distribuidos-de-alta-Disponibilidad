@@ -1,6 +1,9 @@
 package com.sdan.middleware.Application.File;
 
 import com.sdan.middleware.Application.Inputs.Commands.CreateFileCommand;
+import com.sdan.middleware.Application.Inputs.Messages.PurgeChunkMessage;
+import com.sdan.middleware.Application.Inputs.Messages.ReplicateChunkMessage;
+import com.sdan.middleware.Application.Ports.Messaging.IMessageQueuePort;
 import com.sdan.middleware.Application.Ports.Repositories.IChunkRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
 import com.sdan.middleware.Domain.Entities.Chunk;
@@ -25,6 +28,7 @@ public class FileService {
     private final NodeAssignmentService nodeAssignmentService;
     private final ChunkStorageService chunkStorageService;
     private final ChunkReplicationService chunkReplicationService;
+    private final IMessageQueuePort messageQueuePort;
 
     public FileService(
             IFileRepository fileRepository,
@@ -33,6 +37,25 @@ public class FileService {
             NodeAssignmentService nodeAssignmentService,
             ChunkStorageService chunkStorageService,
             ChunkReplicationService chunkReplicationService) {
+        this(
+                fileRepository,
+                chunkRepository,
+                filePartitionService,
+                nodeAssignmentService,
+                chunkStorageService,
+                chunkReplicationService,
+                null
+        );
+    }
+
+    public FileService(
+            IFileRepository fileRepository,
+            IChunkRepository chunkRepository,
+            FilePartitionService filePartitionService,
+            NodeAssignmentService nodeAssignmentService,
+            ChunkStorageService chunkStorageService,
+            ChunkReplicationService chunkReplicationService,
+            IMessageQueuePort messageQueuePort) {
 
         this.fileRepository = fileRepository;
         this.chunkRepository = chunkRepository;
@@ -40,6 +63,7 @@ public class FileService {
         this.nodeAssignmentService = nodeAssignmentService;
         this.chunkStorageService = chunkStorageService;
         this.chunkReplicationService = chunkReplicationService;
+        this.messageQueuePort = messageQueuePort;
     }
 
     public void uploadFile(FileName fileName, FileType fileType, Folder folder, InputStream file, long size) {
@@ -53,23 +77,57 @@ public class FileService {
         File newFile = File.create(folder, fileType, fileName, size, Math.toIntExact(totalChunks));
 
         List<Chunk> chunks = new ArrayList<>();
+        AtomicInteger partNumberCounter = new AtomicInteger(1);
 
-        filePartitionService.partition(file, size, chunkBytes -> {
-            UUID nodeId = nodeIds.poll();
-            int partNumber = 1;
+        try {
+            filePartitionService.partition(file, size, chunkBytes -> {
+                UUID nodeId = nodeIds.poll();
+                int partNumber = partNumberCounter.getAndIncrement();
 
-            Chunk chunk = chunkStorageService.uploadToNode(nodeId, newFile, chunkBytes, false, partNumber);
+                Chunk chunk = chunkStorageService.uploadToNode(nodeId, newFile, chunkBytes, false, partNumber);
 
-            chunks.add(chunk);
+                chunks.add(chunk);
 
-            chunkReplicationService.replicateFile(chunk, REPLICATION_FACTOR);
-        });
+                if (messageQueuePort == null) {
+                    List<Chunk> replicas = chunkReplicationService.replicateFile(chunk, REPLICATION_FACTOR);
+                    if (replicas != null) {
+                        chunks.addAll(replicas);
+                    }
+                }
+            });
+        } catch (RuntimeException e) {
+            // Compensación SAGA: limpiar chunks ya subidos si un fragmento intermedio falla
+            for (Chunk uploadedChunk : chunks) {
+                if (messageQueuePort != null && uploadedChunk.getNode() != null && uploadedChunk.getKey() != null) {
+                    messageQueuePort.publishPurgeTask(new PurgeChunkMessage(
+                            uploadedChunk.getNode().getName().getValue(),
+                            uploadedChunk.getNode().getRegionName().getValue(),
+                            uploadedChunk.getKey().getValue()
+                    ));
+                } else {
+                    try {
+                        chunkStorageService.deleteChunk(uploadedChunk);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+            throw e;
+        }
 
         // Persistir la metadata después de procesar todos los fragmentos.
         fileRepository.save(newFile);
 
         for (Chunk chunk : chunks) {
             chunkRepository.save(chunk);
+        }
+
+        // Encolar replicación asíncrona mediante MOM (RabbitMQ)
+        if (messageQueuePort != null) {
+            for (Chunk chunk : chunks) {
+                messageQueuePort.publishReplicationTask(
+                        new ReplicateChunkMessage(chunk.getId(), REPLICATION_FACTOR)
+                );
+            }
         }
     }
 

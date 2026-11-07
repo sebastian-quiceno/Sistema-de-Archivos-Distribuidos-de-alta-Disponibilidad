@@ -55,7 +55,7 @@ class UserLoginUseCaseTest {
 
         assertNotNull(output);
         assertEquals(userId, output.userId());
-        assertEquals("bob", output.userName().getValue());
+        assertEquals("bob", output.userName());
         assertEquals("validTokenBob", output.token());
     }
 

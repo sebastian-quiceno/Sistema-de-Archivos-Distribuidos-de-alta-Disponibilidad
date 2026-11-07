@@ -27,3 +27,18 @@ spring:
   sql:
     init:
       mode: always
+
+  # RabbitMQ en modo dev permite levantar el contexto aun si el broker no está activo localmente
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: ${RABBITMQ_AUTO_STARTUP:false}
+
+app:
+  aws:
+    region: ${AWS_REGION:us-east-1}
+    access-key-id: ${AWS_ACCESS_KEY_ID:test-access-key}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY:test-secret-key}
+    session-token: ${AWS_SESSION_TOKEN:test-session-token}
+    s3:
+      bucket: ${S3_BUCKET_NAME:test-bucket}

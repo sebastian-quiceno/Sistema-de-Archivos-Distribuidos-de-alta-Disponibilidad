@@ -58,9 +58,8 @@ class AuthControllerTest {
     @DisplayName("POST /api/auth/register exitoso retorna 201 Created con credenciales y token")
     void register_withValidData_returns201Created() throws Exception {
         UUID userId = UUID.randomUUID();
-        UserName username = new UserName("testuser");
         String token = "jwt.token.here";
-        UserCredentialsOutput output = new UserCredentialsOutput(userId, username, token);
+        UserCredentialsOutput output = new UserCredentialsOutput(userId, "testuser", token);
 
         when(createNewUserUseCase.execute(any(SignUpUserCommand.class))).thenReturn(output);
 
@@ -71,7 +70,7 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.userId").value(userId.toString()))
-                .andExpect(jsonPath("$.userName.value").value("testuser"))
+                .andExpect(jsonPath("$.userName").value("testuser"))
                 .andExpect(jsonPath("$.token").value(token));
     }
 
@@ -124,7 +123,7 @@ class AuthControllerTest {
         UUID userId = UUID.randomUUID();
         UserName username = new UserName("testuser");
         String token = "jwt.token.here";
-        UserCredentialsOutput output = new UserCredentialsOutput(userId, username, token);
+        UserCredentialsOutput output = new UserCredentialsOutput(userId, "testuser", token);
 
         when(userLoginUseCase.execute(eq(username), eq("Password123!"))).thenReturn(output);
 
@@ -135,7 +134,7 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId.toString()))
-                .andExpect(jsonPath("$.userName.value").value("testuser"))
+                .andExpect(jsonPath("$.userName").value("testuser"))
                 .andExpect(jsonPath("$.token").value(token));
     }
 

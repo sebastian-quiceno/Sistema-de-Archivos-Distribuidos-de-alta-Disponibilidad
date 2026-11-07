@@ -1,6 +1,8 @@
 package com.sdan.middleware.Application.File;
 
+import com.sdan.middleware.Application.Inputs.Messages.HealChunkMessage;
 import com.sdan.middleware.Application.Outputs.ChunkGetMethodOutput;
+import com.sdan.middleware.Application.Ports.Messaging.IMessageQueuePort;
 import com.sdan.middleware.Application.Ports.Repositories.IChunkRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
 import com.sdan.middleware.Application.Ports.Storage.IFileReconstructionService;
@@ -17,11 +19,21 @@ public class FileReconstructionService implements IFileReconstructionService {
     private final IChunkRepository chunkRepository;
     private final IFileRepository fileRepository;
     private final ChunkStorageService chunkStorageService;
+    private final IMessageQueuePort messageQueuePort;
 
     public FileReconstructionService(IChunkRepository chunkRepository, IFileRepository fileRepository, ChunkStorageService chunkStorageService) {
+        this(chunkRepository, fileRepository, chunkStorageService, null);
+    }
+
+    public FileReconstructionService(
+            IChunkRepository chunkRepository,
+            IFileRepository fileRepository,
+            ChunkStorageService chunkStorageService,
+            IMessageQueuePort messageQueuePort) {
         this.chunkRepository = chunkRepository;
         this.fileRepository = fileRepository;
         this.chunkStorageService = chunkStorageService;
+        this.messageQueuePort = messageQueuePort;
     }
 
     @Override
@@ -51,13 +63,28 @@ public class FileReconstructionService implements IFileReconstructionService {
                         replicas = Collections.emptyList();
                     }
 
-                    response = replicas.stream()
-                            .map(chunkStorageService::getChunk)
-                            .filter(replica -> !replica.corrupted())
-                            .findFirst()
-                            .orElseThrow(() ->
-                                    new FileIsCorruptedException("No se pudo recuperar el chunk: " + chunk.getKey().getValue())
-                            );
+                    Chunk healthyReplica = null;
+                    ChunkGetMethodOutput replicaOutput = null;
+
+                    for (Chunk replica : replicas) {
+                        ChunkGetMethodOutput candidate = chunkStorageService.getChunk(replica);
+                        if (candidate != null && !candidate.corrupted()) {
+                            healthyReplica = replica;
+                            replicaOutput = candidate;
+                            break;
+                        }
+                    }
+
+                    if (replicaOutput == null) {
+                        throw new FileIsCorruptedException("No se pudo recuperar el chunk: " + chunk.getKey().getValue());
+                    }
+
+                    response = replicaOutput;
+
+                    // Encolar auto-sanación asíncrona en MOM (RabbitMQ)
+                    if (messageQueuePort != null && healthyReplica != null) {
+                        messageQueuePort.publishHealTask(new HealChunkMessage(chunk.getId(), healthyReplica.getId()));
+                    }
                 }
 
                 fileParts.add(response.chunkFile());
