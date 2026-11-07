@@ -19,7 +19,7 @@ public interface SpringDataFileRepository extends JpaRepository<FileEntity, UUID
     @Query("SELECT f FROM FileEntity f WHERE f.folder.folderId = :folderId")
     List<FileEntity> findFilesByFolderId(@Param("folderId") UUID folderId);
 
-    @Query("SELECT f FROM FileEntity f WHERE f.folder.user.user_id = :userId")
+    @Query("SELECT f FROM FileEntity f WHERE f.folder.user.userId = :userId")
     List<FileEntity> findFilesByUserId(@Param("userId") UUID userId);
 }
 

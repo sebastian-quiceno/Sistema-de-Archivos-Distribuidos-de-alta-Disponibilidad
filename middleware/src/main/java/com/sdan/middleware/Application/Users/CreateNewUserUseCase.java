@@ -27,6 +27,8 @@ public class CreateNewUserUseCase {
 
         PasswordHash passwordHashed = new PasswordHash(passwordHasher.Hash(dto.password()));
 
+        System.out.println("Contraseña hasheada: "+ passwordHashed);
+
         User newuser = User.create(dto.userName(), passwordHashed);
 
         userRepository.save(newuser);
