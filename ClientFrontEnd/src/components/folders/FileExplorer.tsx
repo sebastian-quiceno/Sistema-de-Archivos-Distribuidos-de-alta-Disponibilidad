@@ -53,10 +53,10 @@ export function FileExplorer({ folderId }: FileExplorerProps) {
 
   return (
     <div className="file-explorer">
-      <h2>Mi Unidad</h2>
+      <h2 className="file-explorer__title">Mi Unidad</h2>
       <div className="file-explorer__files">
         <div className="file-explorer__header">
-          <p>Nombre</p>
+          <p className="file-explorer__header__text">Nombre</p>
           <p>Fecha Modificación</p>
           <p>Tamaño</p>
           <p>Acciones</p>

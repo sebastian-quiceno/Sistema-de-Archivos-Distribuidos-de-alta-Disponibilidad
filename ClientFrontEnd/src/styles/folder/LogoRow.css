@@ -1,8 +1,3 @@
-:root {
-  --color-logo-blue: #373954;
-  --color-logo-red: #65392f;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -28,11 +23,11 @@
 
 .logo-row h2{
     font-size: 3rem;
-    color: var(--color-logo-blue);
+    color: var(--color-text-primary-dark);
     text-align: left;
 }
 
 
 .logo-row span{
-    color: var(--color-logo-red);
+    color: var(--color-icon-default);
 }

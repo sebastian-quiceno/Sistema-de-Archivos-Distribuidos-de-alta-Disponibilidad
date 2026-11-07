@@ -9,7 +9,7 @@ export async function signIn(
 
   try {
     const response = await apiClient.post<AuthResponseType>(
-      "/auth/signin/login",
+      "/auth/login",
       request
     );
 

@@ -24,8 +24,8 @@ export function DeleteModal({
           <path d="M12 9v4" />
           <path d="M12 17h.01" />
         </svg>
-        <h2>Borrar Carpeta</h2>
-        <p>Seguro que quieres borrar la carpeta "<span>{folderName}</span>".</p>
+        <h2 className="delete-modal__title">Borrar Carpeta</h2>
+        <p className="delete-modal__text">Seguro que quieres borrar la carpeta "<span>{folderName}</span>".</p>
         <div className="delete-modal__button-wrapper">
           <button
             className="delete-modal__button"

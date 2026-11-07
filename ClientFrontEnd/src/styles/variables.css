@@ -1,0 +1,65 @@
+:root {
+  --color-app-background: #373954;
+  --color-modal-background: #24252e;
+  --color-text-primary-dark: #373954;
+  --color-text-primary-light: #f6ecde;
+  --color-text-muted: #80808a;
+  --color-text-header: #b7b9cd;
+  --color-text-white: #ffffff;
+  --color-text-modal-white: #fffbf5;
+  --color-text-modal-dark: #24252e;
+  --color-text-link: #cc997c;
+  --color-text-link-hover: #895f46;
+  
+  --color-input-focus: #b3badd;
+  --color-input-focus-hover: #276ad6;
+  --color-input-error: #ee6a6a;
+  --color-input-shadow: #80808080;
+  --color-border-input: #454652;
+
+  --color-modal-overlay: #00000075;
+  --color-modal-danger: #d55050;
+
+  --color-icon-default: #65392f;
+  --color-icon-action-default: #ff0000;
+  --color-icon-action-write: #ffffff;
+  --color-icon-action-download: #caf4b1;
+  --color-icon-action-delete: #f96464;
+  --color-icon-file-document: #88bec6;
+  --color-icon-file-folder: #ac9775;
+  --color-icon-file-image: #96c08d;
+  --color-icon-file-audio: #b275a9;
+  --color-icon-file-video: #a388c6;
+  --color-folder-background: #454658;
+
+  --theme-text: #6b6375;
+  --theme-text-heading: #08060d;
+  --theme-background: #fff;
+  --theme-border: #e5e4e7;
+  --theme-code-background: #f4f3ec;
+  --theme-accent: #aa3bff;
+  --theme-accent-background: rgba(170, 59, 255, 0.1);
+  --theme-accent-border: rgba(170, 59, 255, 0.5);
+  --theme-social-background: rgba(244, 243, 236, 0.5);
+  --theme-shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --theme-text: #9ca3af;
+    --theme-text-heading: #f3f4f6;
+    --theme-background: #16171d;
+    --theme-border: #2e303a;
+    --theme-code-background: #1f2028;
+    --theme-accent: #c084fc;
+    --theme-accent-background: rgba(192, 132, 252, 0.15);
+    --theme-accent-border: rgba(192, 132, 252, 0.5);
+    --theme-social-background: rgba(47, 48, 58, 0.5);
+    --theme-shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+}

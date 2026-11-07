@@ -1,8 +1,3 @@
-:root {
-  --color-name-blue: #373954;
-  --color-icon-red: #65392f;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -21,7 +16,7 @@
 
 .profile__name {
   flex: 3;
-  color: var(--color-name-blue);
+  color: var(--color-text-primary-dark);
   font-size: 2rem;
   text-align: end;
   font-weight: 500;
@@ -43,13 +38,13 @@
   max-height: 100%;
 
   fill: none;
-  stroke: var(--color-icon-red);
+  stroke: var(--color-icon-default);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .profile__button:hover {
-  stroke: var(--color-hover-beige);
+  stroke: var(--color-input-focus-hover);
   transform: scale(1.05);
 } 

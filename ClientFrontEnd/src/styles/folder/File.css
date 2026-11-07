@@ -1,16 +1,3 @@
-:root {
-  --color-name-blue: #373954;
-  --color-icon-red: #65392f;
-  --color-acction-doc: #88bec6;
-  --color-acction-pdf: #65392f;
-  --color-acction-folder: #ac9775;
-  --color-acction-png: #96c08d;
-  --color-acction-jpg: #96c08d;
-  --color-acction-mp3: #b275a9;
-  --color-acction-mp4: #a388c6;
-
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -35,7 +22,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--color-name-blue);
+  color: var(--color-text-primary-light);
   font-size: 1rem;
   margin-left: 20px;
   text-align: start;
@@ -50,7 +37,7 @@
   max-height: 100%;
   min-width: 0;
   min-height: 0;
-  color: var(--color-icon-red);
+  color: var(--color-icon-default);
   display: block;
   fill: none;
   stroke: currentColor;
@@ -60,29 +47,29 @@
 }
 
 .file__svg--folder{
-  color: var(--color-acction-folder);
+  color: var(--color-icon-file-folder);
 }
 
 .file__svg--doc{
-  color: var(--color-acction-doc);
+  color: var(--color-icon-file-document);
 }
 
 .file__svg--pdf{
-  color: var(--color-acction-pdf);
+  color: var(--color-icon-default);
 }
 
 .file__svg--png{
-  color: var(--color-acction-png);
+  color: var(--color-icon-file-image);
 }
 
 .file__svg--jpg{
-  color: var(--color-acction-jpg);
+  color: var(--color-icon-file-image);
 }
 
 .file__svg--mp3{
-  color: var(--color-acction-mp3);
+  color: var(--color-icon-file-audio);
 }
 
 .file__svg--mp4{
-  color: var(--color-acction-mp4);
+  color: var(--color-icon-file-video);
 }

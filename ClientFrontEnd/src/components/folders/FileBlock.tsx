@@ -23,15 +23,15 @@ export function FileBlock({
       <p>{modifiedDate.getDate()}</p>
       <p>{size}</p>
       <div className="file-block-actions">
-        <ActionButton onClick={} variant="write" />
+        <ActionButton onClick={()=> null} variant="write" />
 
         {fileType === "folder" ? (
           <ActionButton onClick={() => null} variant="download" disabled />
         ) : (
-          <ActionButton onClick={} variant="download" />
+          <ActionButton onClick={()=> null} variant="download" />
         )}
 
-        <ActionButton onClick={} variant="delete" />
+        <ActionButton onClick={()=> null} variant="delete" />
       </div>
     </div>
   );

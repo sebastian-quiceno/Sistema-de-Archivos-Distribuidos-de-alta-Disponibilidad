@@ -1,15 +1,3 @@
-:root {
-  --color-input-background: #24252e;
-  --color-secondary: #b3badd;
-  --color-secondary-hover: #276ad6;
-  --color-beige: #f6ecde;
-  --color-hover-beige: #cbb494;
-  --color-wrong-red: #ee6a6a;
-  --color-gray: #80808a;
-  --color-shadow: #80808080;
-  --color-border-light: #454652;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -31,9 +19,9 @@ legend {
   height: 100%;
   padding: 1rem;
   background: none;
-  color: var(--color-beige);
+  color: var(--color-text-primary-light);
   font-size: 1rem;
-  border: 1px solid var(--color-border-light);
+  border: 1px solid var(--color-border-input);
   border-radius: 0.5rem;
   outline: none;
   position: relative;
@@ -41,7 +29,7 @@ legend {
 }
 
 .form__input--wrong {
-  border: 1px solid var(--color-wrong-red);
+  border: 1px solid var(--color-input-error);
 }
 
 .form-item label {
@@ -50,8 +38,8 @@ legend {
   left: 0.8rem;
   transform: translateY(-50%);
   font-size: 0.85rem;
-  background-color: var(--color-input-background);
-  color: var(--color-gray);
+  background-color: var(--color-modal-background);
+  color: var(--color-text-muted);
   transition: 300ms;
   padding: 0 0.2rem;
   pointer-events: none;
@@ -59,25 +47,25 @@ legend {
 }
 
 .form-item__label--variant{
-  background-color: var(--color-beige);
+  background-color: var(--color-text-primary-light);
 }
 
 .form-item input::placeholder {
-  color: var(--color-gray);
+  color: var(--color-text-muted);
   font-size: 0.85rem;
   font-weight: 400;
   opacity: 1;
 }
 
 .form-item input:focus {
-  border-color: var(--color-secondary);
+  border-color: var(--color-input-focus);
 }
 
 .form-item input:focus ~ label,
 .form-item input:not(:placeholder-shown) ~ label {
   top: 0;
   font-size: 0.75rem;
-  color: var(--color-secondary);
+  color: var(--color-input-focus);
   font-weight: 500;
 }
 
@@ -94,7 +82,7 @@ legend {
   border: none;
 
   fill: none;
-  stroke: var(--color-beige);
+  stroke: var(--color-text-primary-light);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -103,11 +91,11 @@ legend {
 }
 
 .btn-svg:hover {
-  stroke: var(--color-hover-beige);
+  stroke: var(--color-input-focus-hover);
   transform: translateY(-50%) scale(1.05);
 }
 
 .wrong-message{
-  color: var(--color-wrong-red);
+  color: var(--color-input-error);
   font-size: 1rem;
 }

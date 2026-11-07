@@ -32,8 +32,8 @@ export function FolderBlock({
       <div className="folder-block__file-wrapper">
         <File fileName={folderName} fileType="folder" />
       </div>
-      <p>{modifiedDate.getDate()}</p>
-      <p>. . .</p>
+      <p className="folder-block__text">{modifiedDate.getDate()}</p>
+      <p className="folder-block__text">. . .</p>
 
       <div className="folder-block-actions">
         <ActionButton onClick={() => setShowWriteModal(true)} variant="write" />
