@@ -1,0 +1,26 @@
+:root {
+  --color-name-blue: #373954;
+  --color-icon-red: #65392f;
+  --color-fileblock-p: #F6ECDE;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.file-block{
+  width: 100%;
+  max-height: 100px;
+  
+  display: flex;
+  flex-direction: row;
+  
+
+}
+
+.file-block p{
+  font-size: 1rem;
+  color: var(--color-fileblock-p);
+}

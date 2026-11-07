@@ -5,13 +5,14 @@ type ButtonVariant = "write" | "download" | "delete";
 interface ActionButtonProps {
   variant: ButtonVariant;
   onClick: () => void;
+  disabled?: boolean;
 }
 
-export function ActionButton({ variant, onClick }: ActionButtonProps) {
+export function ActionButton({ variant, onClick, disabled }: ActionButtonProps) {
   const Icon = iconMap[variant];
 
   return (
-    <button className="acction-button" type="button" onClick={onClick}>
+    <button className="acction-button" type="button" onClick={onClick} disabled = {disabled}>
       <Icon />
     </button>
   );

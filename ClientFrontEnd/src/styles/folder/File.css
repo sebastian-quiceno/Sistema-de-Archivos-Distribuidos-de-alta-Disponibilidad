@@ -1,0 +1,43 @@
+:root {
+  --color-name-blue: #373954;
+  --color-icon-red: #65392f;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.file-wrapper {
+  width: 100%;
+  height: 50px;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+
+  display: flex;
+}
+
+.file-wrapper p {
+  color: var(--color-name-blue);
+  font-size: 2rem;
+  margin-left: 20px;
+  text-align: start;
+  font-weight: 500;
+}
+
+.file__svg {
+  color: var(--color-icon-red);
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: block;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
