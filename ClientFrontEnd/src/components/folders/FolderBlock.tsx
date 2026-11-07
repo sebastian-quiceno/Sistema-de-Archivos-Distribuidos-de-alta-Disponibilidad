@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../../styles/folder/FolderBlock.css";
 
 import { ActionButton } from "./ActionButton";
 import { File, type FileVariant } from "./File";
@@ -14,28 +15,27 @@ import { WriteModal } from "../../components/folders/WriteModal";
 
 interface FolderBlockProps {
   folderId: string;
-  folderType: FileVariant;
+  folderName: string;
   modifiedDate: Date;
-  size: number;
 }
 
-export function FileBlock({
+export function FolderBlock({
   folderId,
   folderName,
-  folderType,
   modifiedDate,
-  size,
 }: FolderBlockProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showWriteModal, setShowWriteModal] = useState(false);
 
   return (
-    <div className="file-block">
-      <File fileName={folderName} fileType="folder" />
+    <div className="folder-block">
+      <div className="folder-block__file-wrapper">
+        <File fileName={folderName} fileType="folder" />
+      </div>
       <p>{modifiedDate.getDate()}</p>
       <p>. . .</p>
 
-      <div className="file-block-actions">
+      <div className="folder-block-actions">
         <ActionButton onClick={() => setShowWriteModal(true)} variant="write" />
         {showWriteModal ? (
           <WriteModal

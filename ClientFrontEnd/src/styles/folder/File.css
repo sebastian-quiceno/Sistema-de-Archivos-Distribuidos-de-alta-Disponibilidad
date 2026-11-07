@@ -1,6 +1,14 @@
 :root {
   --color-name-blue: #373954;
   --color-icon-red: #65392f;
+  --color-acction-doc: #88bec6;
+  --color-acction-pdf: #65392f;
+  --color-acction-folder: #ac9775;
+  --color-acction-png: #96c08d;
+  --color-acction-jpg: #96c08d;
+  --color-acction-mp3: #b275a9;
+  --color-acction-mp4: #a388c6;
+
 }
 
 * {
@@ -10,34 +18,71 @@
 }
 
 .file-wrapper {
+  display: flex;
   width: 100%;
-  height: 50px;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
   flex-direction: row;
   justify-content: start;
   align-items: center;
-
-  display: flex;
+  overflow: hidden;
 }
 
 .file-wrapper p {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--color-name-blue);
-  font-size: 2rem;
+  font-size: 1rem;
   margin-left: 20px;
   text-align: start;
   font-weight: 500;
 }
 
 .file__svg {
-  color: var(--color-icon-red);
+  flex: 0 1 auto;
   width: auto;
   height: 100%;
   max-width: 100%;
+  max-height: 100%;
   min-width: 0;
+  min-height: 0;
+  color: var(--color-icon-red);
   display: block;
-
   fill: none;
   stroke: currentColor;
   stroke-width: 1;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.file__svg--folder{
+  color: var(--color-acction-folder);
+}
+
+.file__svg--doc{
+  color: var(--color-acction-doc);
+}
+
+.file__svg--pdf{
+  color: var(--color-acction-pdf);
+}
+
+.file__svg--png{
+  color: var(--color-acction-png);
+}
+
+.file__svg--jpg{
+  color: var(--color-acction-jpg);
+}
+
+.file__svg--mp3{
+  color: var(--color-acction-mp3);
+}
+
+.file__svg--mp4{
+  color: var(--color-acction-mp4);
 }

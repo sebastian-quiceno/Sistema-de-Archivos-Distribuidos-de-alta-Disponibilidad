@@ -1,4 +1,4 @@
-import '../../styles/folder/File.css'
+import "../../styles/folder/File.css";
 
 export type FileVariant =
   | "noType"
@@ -28,7 +28,11 @@ export function File({ fileType = "noType", fileName }: FileProps) {
 
 const NoType = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" className='file__svg'>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 40 40"
+      className="file__svg"
+    >
       <path
         stroke="currentColor"
         strokeWidth="1.5"
@@ -54,10 +58,8 @@ const Folder = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="256"
-      height="256"
       viewBox="0 0 24 24"
-      className='file__svg'
+      className="file__svg file__svg--folder"
     >
       <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
     </svg>
@@ -66,7 +68,11 @@ const Folder = () => {
 
 const PNG = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" className='file__svg'>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 40 40"
+      className="file__svg file__svg--png"
+    >
       <path
         stroke="currentColor"
         strokeWidth="1.5"
@@ -89,7 +95,11 @@ const PNG = () => {
 
 const JPG = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" className='file__svg'>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 40 40"
+      className="file__svg file__svg--jpg"
+    >
       <path
         stroke="currentColor"
         strokeWidth="1.5"
@@ -112,7 +122,11 @@ const JPG = () => {
 
 const DOC = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" className='file__svg'>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 40 40"
+      className="file__svg file__svg--doc"
+    >
       <path
         stroke="currentColor"
         strokeWidth="1.5"
@@ -135,7 +149,11 @@ const DOC = () => {
 
 const PDF = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" className='file__svg'>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 40 40"
+      className="file__svg file__svg--pdf"
+    >
       <path
         stroke="currentColor"
         strokeWidth="1.5"
@@ -158,7 +176,11 @@ const PDF = () => {
 
 const MP3 = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" className='file__svg'>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 40 40"
+      className="file__svg file__svg--mp3"
+    >
       <path
         stroke="currentColor"
         strokeWidth="1.5"
@@ -181,7 +203,11 @@ const MP3 = () => {
 
 const MP4 = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" className='file__svg'>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 40 40"
+      className="file__svg file__svg--mp4"
+    >
       <path
         stroke="currentColor"
         strokeWidth="1.5"

@@ -1,0 +1,44 @@
+:root {
+  --color-file-explorer-background: #373954;
+  --color-file-explorer-title: #ffffff;
+  --color-file-explorer-text-header: #B7B9CD;
+  --color-download-icon: #caf4b1;
+  --color-delete-icon: #f96464;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.file-explorer {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-file-explorer-background);
+  padding: 30px 50px;
+}
+
+.file-explorer h2 {
+  font-size: 3rem;
+  color: var(--color-file-explorer-title);
+
+  margin-bottom: 30px;
+}
+
+.file-explorer__files {
+  display: flex;
+  flex-direction: column;
+}
+
+.file-explorer__header {
+  display: flex;
+  flex-direction: row;
+}
+
+.file-explorer__header p {
+  flex: 1;
+  color: var(--color-file-explorer-text-header);
+}
+
+
