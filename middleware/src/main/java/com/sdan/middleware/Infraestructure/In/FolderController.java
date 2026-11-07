@@ -4,6 +4,7 @@ import com.sdan.middleware.Application.Folder.*;
 import com.sdan.middleware.Application.Inputs.Commands.CreateFolderCommand;
 import com.sdan.middleware.Application.Inputs.Commands.MoveFolderCommand;
 import com.sdan.middleware.Application.Outputs.FolderOutput;
+import com.sdan.middleware.Application.Outputs.MetadataFileOutput;
 import com.sdan.middleware.Application.Outputs.RenameFolderCommand;
 import com.sdan.middleware.Infraestructure.In.DTOs.Request.CreateFolderRequest;
 import com.sdan.middleware.Infraestructure.In.DTOs.Request.MoveFolderRequest;
@@ -22,17 +23,15 @@ public class FolderController {
 
     private final CreateFolderUseCase createFolderUseCase;
     private final GetFoldersByFatherFolderUseCase getFoldersByFatherFolderUseCase;
+    private final GetFilesByFolderIdUseCase getFilesByFolderIdUseCase;
     private final MoveFolderUserCase moveFolderUserCase;
     private final DeleteFolderUseCase deleteFolderUseCase;
     private final RenameFolderUseCase renameFolderUseCase;
 
-    public FolderController(
-            CreateFolderUseCase createFolderUseCase,
-            GetFoldersByFatherFolderUseCase getFoldersByFatherFolderUseCase,
-            MoveFolderUserCase moveFolderUserCase,
-            DeleteFolderUseCase deleteFolderUseCase, RenameFolderUseCase renameFolderUseCase) {
+    public FolderController(CreateFolderUseCase createFolderUseCase, GetFoldersByFatherFolderUseCase getFoldersByFatherFolderUseCase, GetFilesByFolderIdUseCase getFilesByFolderIdUseCase, MoveFolderUserCase moveFolderUserCase, DeleteFolderUseCase deleteFolderUseCase, RenameFolderUseCase renameFolderUseCase) {
         this.createFolderUseCase = createFolderUseCase;
         this.getFoldersByFatherFolderUseCase = getFoldersByFatherFolderUseCase;
+        this.getFilesByFolderIdUseCase = getFilesByFolderIdUseCase;
         this.moveFolderUserCase = moveFolderUserCase;
         this.deleteFolderUseCase = deleteFolderUseCase;
         this.renameFolderUseCase = renameFolderUseCase;
@@ -63,6 +62,13 @@ public class FolderController {
             throw new IllegalArgumentException("El identificador de la carpeta no puede ser nulo");
         }
         List<FolderOutput> outputs = getFoldersByFatherFolderUseCase.execute(id);
+        return ResponseEntity.ok(outputs);
+    }
+
+    @GetMapping("/{id}/files")
+    @PreAuthorize("hasAuthority('folders.read')")
+    public ResponseEntity<List<MetadataFileOutput>> getFiles(@PathVariable("id") UUID id) {
+        List<MetadataFileOutput> outputs = getFilesByFolderIdUseCase.execute(id);
         return ResponseEntity.ok(outputs);
     }
 
