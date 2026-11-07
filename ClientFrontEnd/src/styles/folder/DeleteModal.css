@@ -1,5 +1,5 @@
 :root {
-  --color-name-blue: #373954;
+  --color-folder-name-blue: #373954;
   --color-delete-modal-overlay: #00000075;
   --color-delete-modal-red: #d55050;
   --color-delete-modal-beige: #f6ecde;
@@ -13,21 +13,19 @@
   box-sizing: border-box;
 }
 
-/* Fondo que bloquea toda la pantalla */
 .delete-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: var(--color-delete-modal-overlay); /* Oscurece el fondo */
+  background-color: var(--color-delete-modal-overlay);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10; /* Asegura que esté por encima de todo */
+  z-index: 10;
 }
 
-/* Caja del contenido */
 .delete-modal-content {
   display: flex;
   flex-direction: column;
@@ -68,7 +66,7 @@
 
 .delete-modal-content p span {
   font-weight: 900;
-  color: var(--color-name-blue);
+  color: var(--color-folder-name-blue);
 }
 
 .delete-modal__button-wrapper{

@@ -58,6 +58,10 @@ legend {
   z-index: 2;
 }
 
+.form-item__label--variant{
+  background-color: var(--color-beige);
+}
+
 .form-item input::placeholder {
   color: var(--color-gray);
   font-size: 0.85rem;

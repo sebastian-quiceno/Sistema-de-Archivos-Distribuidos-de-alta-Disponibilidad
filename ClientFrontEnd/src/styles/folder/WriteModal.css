@@ -1,0 +1,109 @@
+:root {
+  --color-folder-name-blue: #373954;
+  --color-write-modal-overlay: #00000075;
+  --color-write-modal-red: #373954;
+  --color-write-modal-beige: #f6ecde;
+  --color-write-modal-white: #fffbf5;
+  --color-write-modal-black: #24252e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.rename-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-write-modal-overlay);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.rename-modal-content {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-write-modal-beige);
+  padding: 25px 40px;
+  border-radius: 30px;
+  max-width: 500px;
+  max-height: 300px;
+  height: 70%;
+  width: 70%;
+  box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.1);
+
+}
+
+.rename-modal__svg {
+  height: 100%;
+  flex: 1;
+  fill: none;
+  stroke: var(--color-write-icon);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rename-modal-content h2 {
+  flex: 1;
+  font-size: 2.5rem;
+  text-align: center;
+  color: var(--color-write-modal-black);
+}
+
+.rename-modal-content p {
+  flex: 1;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--color-write-modal-black);
+}
+
+.rename-modal-content p span {
+  font-weight: 900;
+  color: var(--color-name-blue);
+}
+
+.rename-modal__input-wrapper{
+    flex: 1;
+    max-width: 100%;
+    max-height: 100%;
+    padding: 10px;
+
+}
+.rename-modal__input{
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    border-radius: 20px;
+    border: none;
+}
+
+
+.rename-modal__button-wrapper{
+  flex: 1;
+  display: flex;
+  gap: 30px;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.rename-modal__button{
+  flex: 1;
+  border: none;
+  height: 100%;
+  max-height: 80px;
+  border-radius: 20px;
+  box-shadow: 0px 4px 3px 0px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-delete-modal-white);
+}
+
+.rename-modal__button--yes{
+  background-color: var(--color-delete-modal-red);
+  color: var(--color-delete-modal-white);
+}

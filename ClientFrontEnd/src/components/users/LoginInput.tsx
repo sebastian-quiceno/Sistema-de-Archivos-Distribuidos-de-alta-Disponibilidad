@@ -7,6 +7,7 @@ interface LoginInputProps {
   isPassword: boolean;
   isWrong?: boolean;
   onchange: (event: string) => void;
+  isvariant? : boolean;
 }
 
 function LoginInput({
@@ -15,6 +16,7 @@ function LoginInput({
   isPassword,
   isWrong,
   onchange,
+  isvariant,
 }: LoginInputProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(isPassword);
@@ -34,7 +36,7 @@ function LoginInput({
         autoComplete="off"
         onChange={(event) => onchange(event.target.value)}
       />
-      <label>{text}</label>
+      <label className={isvariant? "form-item__label--variant": ""}>{text}</label>
       {isPassword ? SeePasswordButton(showPassword, setShowPassword) : null}
 
       {isWrong ? <p className="wrong-message">La contraseña es incorrecta</p> : null}
