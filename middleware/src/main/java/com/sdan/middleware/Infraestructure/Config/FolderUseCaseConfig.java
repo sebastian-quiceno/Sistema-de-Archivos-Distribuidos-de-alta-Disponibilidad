@@ -42,5 +42,10 @@ public class FolderUseCaseConfig {
     public RenameFolderUseCase renameFolderUseCase(IFolderRepository folderRepository, ICurrentUser currentUser){
         return new RenameFolderUseCase(folderRepository, currentUser);
     }
+
+    @Bean
+    public GetFilesByFolderIdUseCase getFilesByFolderIdUseCase(IFolderRepository folderRepository, ICurrentUser currentUser){
+        return new GetFilesByFolderIdUseCase(folderRepository, currentUser);
+    }
 }
 

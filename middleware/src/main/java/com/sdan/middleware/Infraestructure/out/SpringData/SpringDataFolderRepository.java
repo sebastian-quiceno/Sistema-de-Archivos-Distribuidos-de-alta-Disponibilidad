@@ -14,5 +14,8 @@ public interface SpringDataFolderRepository extends JpaRepository<FolderEntity, 
 
     @Query("SELECT f FROM FolderEntity f WHERE f.fatherFolder.folderId = :folderId")
     List<FolderEntity> findRelatedFolders(@Param("folderId") UUID folderId);
+
+    @Query("SELECT f FROM FolderEntity f WHERE f.user.user_id = :userId AND f.fatherFolder IS NULL")
+    List<FolderEntity> findRelatedFoldersById(@Param("userId") UUID userId);
 }
 

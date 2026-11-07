@@ -1,11 +1,14 @@
 package com.sdan.middleware.Infraestructure.out;
 
 import com.sdan.middleware.Application.Ports.Repositories.IFolderRepository;
+import com.sdan.middleware.Domain.Entities.File;
 import com.sdan.middleware.Domain.Entities.Folder;
 import com.sdan.middleware.Infraestructure.out.Entities.FolderEntity;
 import com.sdan.middleware.Infraestructure.out.Entities.UserEntity;
+import com.sdan.middleware.Infraestructure.out.Mappers.FileMapper;
 import com.sdan.middleware.Infraestructure.out.Mappers.FolderMapper;
 import com.sdan.middleware.Infraestructure.out.Mappers.UserMapper;
+import com.sdan.middleware.Infraestructure.out.SpringData.SpringDataFileRepository;
 import com.sdan.middleware.Infraestructure.out.SpringData.SpringDataFolderRepository;
 import com.sdan.middleware.Infraestructure.out.SpringData.SpringDataUserRepository;
 import org.springframework.stereotype.Repository;
@@ -19,18 +22,24 @@ public class FolderRepository implements IFolderRepository {
 
     private final SpringDataFolderRepository springDataFolderRepository;
     private final SpringDataUserRepository springDataUserRepository;
+    private final SpringDataFileRepository springDataFileRepository;
     private final FolderMapper folderMapper;
     private final UserMapper userMapper;
+    private final FileMapper fileMapper;
 
     public FolderRepository(
             SpringDataFolderRepository springDataFolderRepository,
             SpringDataUserRepository springDataUserRepository,
+            SpringDataFileRepository springDataFileRepository,
             FolderMapper folderMapper,
-            UserMapper userMapper) {
+            UserMapper userMapper,
+            FileMapper fileMapper) {
         this.springDataFolderRepository = springDataFolderRepository;
         this.springDataUserRepository = springDataUserRepository;
+        this.springDataFileRepository = springDataFileRepository;
         this.folderMapper = folderMapper;
         this.userMapper = userMapper;
+        this.fileMapper = fileMapper;
     }
 
     @Override
@@ -48,6 +57,37 @@ public class FolderRepository implements IFolderRepository {
         }
         return springDataFolderRepository.findRelatedFolders(id).stream()
                 .map(folderMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Folder> getRelatedFoldersByUserId(UUID userId) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+
+        return springDataFolderRepository.findRelatedFoldersById(userId).stream()
+                .map(folderMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<File> getRelatedFiles(UUID id) {
+        if (id == null) {
+            return Collections.emptyList();
+        }
+        return springDataFileRepository.findFilesByFolderId(id).stream()
+                .map(fileMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<File> getRelatedFileByUserId(UUID userId) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+        return springDataFileRepository.findFilesByUserId(userId).stream()
+                .map(fileMapper::toDomain)
                 .toList();
     }
 

@@ -1,5 +1,6 @@
 package com.sdan.middleware.Application.Ports.Repositories;
 
+import com.sdan.middleware.Domain.Entities.File;
 import com.sdan.middleware.Domain.Entities.Folder;
 
 import java.util.List;
@@ -10,6 +11,12 @@ public interface IFolderRepository {
     Folder getById(UUID id);
 
     List<Folder> getRelatedFolders(UUID id);
+
+    List<Folder> getRelatedFoldersByUserId(UUID userId);
+
+    List<File> getRelatedFiles(UUID id);
+
+    List<File> getRelatedFileByUserId(UUID userId);
 
     void save(Folder folder);
 
