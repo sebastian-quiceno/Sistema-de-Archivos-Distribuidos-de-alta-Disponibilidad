@@ -38,11 +38,12 @@ export async function getSubfolders(folderId: string): Promise<FolderType[]> {
   }
 }
 
-export async function getFiles(folderId: string | null): Promise<MetadataFileType[]> {
+export async function getFiles(folderId: string): Promise<MetadataFileType[]> {
   try {
-    const response = await apiClient.get<MetadataFileType[]>('/folders/subfolders', {
-      params: { folderId }
-    });
+    const response = await apiClient.get<MetadataFileType[]>(
+      `/folders/${encodeURIComponent(folderId)}/files`,
+    );
+    console.log(response);
     return response.data;
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Error al consultar subcarpetas"), { cause: error });

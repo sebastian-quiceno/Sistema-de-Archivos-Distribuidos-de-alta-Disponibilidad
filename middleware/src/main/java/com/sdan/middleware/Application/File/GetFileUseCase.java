@@ -1,5 +1,6 @@
 package com.sdan.middleware.Application.File;
 
+import com.sdan.middleware.Application.Outputs.FileDownloadOutput;
 import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
 import com.sdan.middleware.Application.Ports.Security.ICurrentUser;
 import com.sdan.middleware.Application.Ports.Storage.IFileReconstructionService;
@@ -22,7 +23,7 @@ public class GetFileUseCase {
         this.fileReconstructionService = fileReconstructionService;
     }
 
-    public InputStream execute(UUID fileId) {
+    public FileDownloadOutput execute(UUID fileId) {
         UUID loggedUserId = currentUser.getUserId();
 
         File file = fileRepository.getById(fileId).orElseThrow(
@@ -33,6 +34,7 @@ public class GetFileUseCase {
             throw new FileDoesNotBelongToUserException("El archivo con el id: '" + fileId + "' no pertenece al usuario con el id: '" + loggedUserId + "'");
         }
 
-        return fileReconstructionService.mergeFile(file);
+        InputStream stream = fileReconstructionService.mergeFile(file);
+        return new FileDownloadOutput(stream, file.getName().getValue());
     }
 }

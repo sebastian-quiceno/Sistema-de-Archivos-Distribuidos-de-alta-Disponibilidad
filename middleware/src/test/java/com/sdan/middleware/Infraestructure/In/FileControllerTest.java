@@ -8,6 +8,7 @@ import com.sdan.middleware.Application.File.UpdateFileUseCase;
 import com.sdan.middleware.Application.File.UploadFileUseCase;
 import com.sdan.middleware.Application.Inputs.Commands.CreateFileCommand;
 import com.sdan.middleware.Application.Inputs.Commands.UpdateFileCommand;
+import com.sdan.middleware.Application.Outputs.FileDownloadOutput;
 import com.sdan.middleware.Application.Outputs.IntegrityCheckReport;
 import com.sdan.middleware.Application.Outputs.MetadataFileOutput;
 import com.sdan.middleware.Domain.Exceptions.File.FileDoesNotBelongToUserException;
@@ -22,19 +23,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -243,20 +248,46 @@ class FileControllerTest {
         UUID fileId = UUID.randomUUID();
         byte[] expectedBytes = "Contenido de archivo descargado".getBytes(StandardCharsets.UTF_8);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(expectedBytes);
+        String expectedFileName = "reporte.pdf";
 
-        when(getFileUseCase.execute(fileId)).thenReturn(inputStream);
+        when(getFileUseCase.execute(fileId)).thenReturn(new FileDownloadOutput(inputStream, expectedFileName));
 
-        MvcResult result = mockMvc.perform(get("/api/files/{id}/download", fileId))
+        mockMvc.perform(get("/api/files/{id}/download", fileId))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE))
-                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileId + "\""))
-                .andExpect(request().asyncStarted())
-                .andReturn();
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + expectedFileName + "\""))
+                .andExpect(request().asyncStarted());
 
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch(result))
-                .andExpect(status().isOk());
+        ByteArrayInputStream directInputStream = new ByteArrayInputStream(expectedBytes);
+        when(getFileUseCase.execute(fileId)).thenReturn(new FileDownloadOutput(directInputStream, expectedFileName));
 
-        assertArrayEquals(expectedBytes, result.getResponse().getContentAsByteArray());
+        ResponseEntity<StreamingResponseBody> responseEntity = fileController.downloadFile(fileId);
+        assertNotNull(responseEntity.getBody());
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        responseEntity.getBody().writeTo(outputStream);
+
+        assertArrayEquals(expectedBytes, outputStream.toByteArray());
+    }
+
+    @Test
+    @DisplayName("GET /api/files/{id}/download con nombre UTF-8 configura Content-Disposition con RFC 6266")
+    void downloadFile_withUtf8FileName_configuresContentDispositionUtf8() throws Exception {
+        UUID fileId = UUID.randomUUID();
+        byte[] expectedBytes = "Contenido".getBytes(StandardCharsets.UTF_8);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(expectedBytes);
+        String utf8FileName = "diseño_prueba.pdf";
+
+        when(getFileUseCase.execute(fileId)).thenReturn(new FileDownloadOutput(inputStream, utf8FileName));
+
+        ContentDisposition expectedDisposition = ContentDisposition.attachment()
+                .filename(utf8FileName, StandardCharsets.UTF_8)
+                .build();
+
+        mockMvc.perform(get("/api/files/{id}/download", fileId))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, expectedDisposition.toString()))
+                .andExpect(request().asyncStarted());
     }
 
     @Test

@@ -14,7 +14,8 @@ function isAuthResponse(value: unknown): value is AuthResponseType {
     typeof auth.userId === "string" &&
     typeof auth.userName === "string" &&
     typeof auth.token === "string" &&
-    auth.token.length > 0
+    auth.token.length > 0 &&
+    (auth.rootFolderId === undefined || typeof auth.rootFolderId === "string")
   );
 }
 

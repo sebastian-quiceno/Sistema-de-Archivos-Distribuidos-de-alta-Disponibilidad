@@ -1,0 +1,12 @@
+.file-explorer-actions {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+}
+
+.file-explorer-actions .button-with-icon {
+  flex: 1;
+}

@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import "../../styles/folder/WriteModal.css";
 import { renameFolder } from "../../services/folderService";
-import LoginInput from "../../components/users/LoginInput";
 
 interface WriteModalProps {
   folderId: string;

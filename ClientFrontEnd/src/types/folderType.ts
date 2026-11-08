@@ -15,6 +15,7 @@ export interface RenameFolderRequestType {
 
 export interface FolderType {
     folderId: string;
+    fatherFolderId: string | null;
     name: string;
     createdDate: string;
 }

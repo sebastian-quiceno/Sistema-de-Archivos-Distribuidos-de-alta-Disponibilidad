@@ -118,7 +118,7 @@ class FolderControllerTest {
         UUID folderId = UUID.randomUUID();
         UUID subfolderId = UUID.randomUUID();
         List<FolderOutput> outputs = List.of(
-                new FolderOutput(subfolderId, "Proyectos", new Date())
+                new FolderOutput(folderId, subfolderId, "Proyectos", new Date())
         );
 
         when(getFoldersByFatherFolderUseCase.execute(folderId)).thenReturn(outputs);

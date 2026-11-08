@@ -10,8 +10,8 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [auth, setAuth] = useState<AuthResponseType | null>(getStoredAuth);
 
-  const login = useCallback(({ userId, userName, token }: AuthResponseType) => {
-    const nextAuth = { userId, userName, token };
+  const login = useCallback(({ userId, userName, token, rootFolderId }: AuthResponseType) => {
+    const nextAuth = { userId, userName, token, rootFolderId };
     saveAuth(nextAuth);
     setAuth(nextAuth);
   }, []);

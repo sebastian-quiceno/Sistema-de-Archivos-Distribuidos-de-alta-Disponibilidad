@@ -14,4 +14,5 @@ export interface AuthResponseType{
     userId: string;
     userName: string;
     token: string;
+    rootFolderId: string;
 }

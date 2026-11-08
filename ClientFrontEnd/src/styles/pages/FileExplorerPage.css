@@ -1,0 +1,25 @@
+body {
+  background-color: var(--color-text-primary-light);
+}
+
+.file-explorer-page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  gap: 30px;
+  flex-direction: row;
+}
+
+.file-explorer-page__aside {
+  flex: 1;
+  flex-shrink: 1;
+}
+
+.file-explorer-page__main {
+  flex: 4;
+  flex-shrink: 1;
+
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+}

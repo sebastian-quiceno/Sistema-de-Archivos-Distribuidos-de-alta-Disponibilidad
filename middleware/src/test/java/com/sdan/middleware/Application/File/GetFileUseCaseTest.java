@@ -1,5 +1,6 @@
 package com.sdan.middleware.Application.File;
 
+import com.sdan.middleware.Application.Outputs.FileDownloadOutput;
 import com.sdan.middleware.Application.Ports.Repositories.IFileRepository;
 import com.sdan.middleware.Application.Ports.Security.ICurrentUser;
 import com.sdan.middleware.Application.Ports.Storage.IFileReconstructionService;
@@ -107,10 +108,11 @@ class GetFileUseCaseTest {
         InputStream expectedStream = new ByteArrayInputStream("hello world".getBytes());
         when(fileReconstructionService.mergeFile(myFile)).thenReturn(expectedStream);
 
-        InputStream result = getFileUseCase.execute(fileId);
+        FileDownloadOutput result = getFileUseCase.execute(fileId);
 
         assertNotNull(result);
-        assertEquals(expectedStream, result);
+        assertEquals(expectedStream, result.stream());
+        assertEquals("my_file.txt", result.fileName());
         verify(fileReconstructionService, times(1)).mergeFile(myFile);
     }
 }

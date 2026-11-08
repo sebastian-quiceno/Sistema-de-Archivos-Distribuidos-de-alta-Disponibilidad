@@ -3,8 +3,10 @@ package com.sdan.middleware.Infraestructure.In;
 import com.sdan.middleware.Application.File.*;
 import com.sdan.middleware.Application.Inputs.Commands.CreateFileCommand;
 import com.sdan.middleware.Application.Inputs.Commands.UpdateFileCommand;
+import com.sdan.middleware.Application.Outputs.FileDownloadOutput;
 import com.sdan.middleware.Application.Outputs.IntegrityCheckReport;
 import com.sdan.middleware.Application.Outputs.MetadataFileOutput;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -104,17 +107,34 @@ public class FileController {
             throw new IllegalArgumentException("El identificador del archivo no puede ser nulo");
         }
 
-        InputStream inputStream = getFileUseCase.execute(id);
+        FileDownloadOutput downloadOutput = getFileUseCase.execute(id);
 
         StreamingResponseBody responseBody = outputStream -> {
-            try (inputStream) {
+            try (InputStream inputStream = downloadOutput.stream()) {
                 inputStream.transferTo(outputStream);
+                outputStream.flush();
             }
         };
 
+        String rawFileName = downloadOutput.fileName();
+        String safeFileName = (rawFileName != null && !rawFileName.isBlank())
+                ? rawFileName.replace("\r", "").replace("\n", "").replace("\"", "")
+                : id.toString();
+
+        ContentDisposition contentDisposition;
+        if (StandardCharsets.US_ASCII.newEncoder().canEncode(safeFileName)) {
+            contentDisposition = ContentDisposition.attachment()
+                    .filename(safeFileName)
+                    .build();
+        } else {
+            contentDisposition = ContentDisposition.attachment()
+                    .filename(safeFileName, StandardCharsets.UTF_8)
+                    .build();
+        }
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + id + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
                 .body(responseBody);
     }
 

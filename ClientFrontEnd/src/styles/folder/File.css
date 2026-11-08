@@ -55,7 +55,7 @@
 }
 
 .file__svg--pdf{
-  color: var(--color-icon-default);
+  color: var(--color-icon-file-pdf);
 }
 
 .file__svg--png{

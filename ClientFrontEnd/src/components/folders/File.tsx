@@ -1,14 +1,5 @@
 import "../../styles/folder/File.css";
-
-export type FileVariant =
-  | "noType"
-  | "folder"
-  | "doc"
-  | "pdf"
-  | "png"
-  | "jpg"
-  | "mp3"
-  | "mp4";
+import {type FileVariant} from '../../types/fileType'
 
 interface FileProps {
   fileType: FileVariant;
@@ -45,8 +36,8 @@ const NoType = () => {
       />
       <path
         stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         strokeWidth="1.5"
         d="M11.9 19.5h16.2m-16.2 3.6h16.2m-16.2 3.6h16.2m-16.2 3.6h12.6"
       />

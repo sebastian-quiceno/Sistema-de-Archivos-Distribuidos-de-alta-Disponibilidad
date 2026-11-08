@@ -36,7 +36,7 @@ public class GetFoldersByFatherFolderUseCase {
 
         return relatedFolders.stream().map(
                 (f)-> new FolderOutput(
-                        f.getFolderId(), f.getName().getValue(), f.getCreationDate()
+                        f.getFolderId(), f.getFatherFolder().getFolderId(), f.getName().getValue(), f.getCreationDate()
                 )).toList();
     }
 }

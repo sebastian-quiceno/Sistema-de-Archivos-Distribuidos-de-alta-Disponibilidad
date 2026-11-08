@@ -17,7 +17,7 @@ export interface UpdateFileRequestType {
 export interface MetadataFileType {
     id: string;
     folderId: string;
-    fileTypeName: string;
+    fileTypeName: FileVariant;
     fileName: string;
     bytesSize: number;
     totalPartitions: number;
@@ -37,3 +37,13 @@ export interface IntegrityCheckReportType {
     corruptedFilesCount: number;
     issues: FileAuditIssueType[];
 }
+
+export type FileVariant =
+  | "noType"
+  | "folder"
+  | "doc"
+  | "pdf"
+  | "png"
+  | "jpg"
+  | "mp3"
+  | "mp4";

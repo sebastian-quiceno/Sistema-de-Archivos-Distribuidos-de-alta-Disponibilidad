@@ -6,15 +6,42 @@
 
 .file-block{
   width: 100%;
-  max-height: 100px;
-  
+  height: 40px;
+  min-height: 0;
+  align-items: center;
   display: flex;
   flex-direction: row;
-  
-
+  gap: 1rem;
+  overflow: hidden;
 }
 
-.file-block p{
+.file-block__file-wrapper{
+  flex: 1 1 0;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.file-block__text{
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 1rem;
   color: var(--color-text-primary-light);
+}
+
+.file-block-actions{
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  padding: 3px 0px;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 1rem;
+  height: 100%;
 }

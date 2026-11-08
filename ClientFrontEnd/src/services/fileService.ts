@@ -10,16 +10,25 @@ import {
 
 
 export const uploadFile = async ({ file, folderId, fileTypeName, fileName }: UploadFileRequestType): Promise<void> => {
+  if (!file || file.size === 0) {
+    throw new Error("El archivo es obligatorio y no puede estar vacío");
+  }
+  if (!folderId?.trim()) {
+    throw new Error("El identificador de la carpeta es obligatorio");
+  }
+  if (!fileTypeName?.trim()) {
+    throw new Error("El tipo de archivo es obligatorio");
+  }
+  if (!fileName?.trim()) {
+    throw new Error("El nombre del archivo es obligatorio");
+  }
 
   const request = new FormData();
 
   request.append('file', file)
   request.append('folderId', folderId)
   request.append("fileTypeName", fileTypeName);
-
-  if (fileName) {
-    request.append('name', fileName);
-  }
+  request.append('name', fileName.trim());
 
   try {
     await apiClient.post<void>(
