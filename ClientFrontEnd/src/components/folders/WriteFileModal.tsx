@@ -1,78 +1,104 @@
 import { useState } from "react";
+import "../../styles/folder/UploadFileModal.css";
+import { updateFile } from "../../services/fileService";
 
-import "../../styles/folder/WriteModal.css";
-import { renameFolder } from "../../services/folderService";
-
-interface WriteModalProps {
-  folderId: string;
-  folderName: string;
+interface WriteFileModalProps {
+  fileId: string;
+  fileName: string;
   closeMethod: () => void;
+  onUpdateSuccess?: () => void;
 }
 
-export function WriteModal({
-  folderId,
-  folderName,
+export function WriteFileModal({
+  fileId,
+  fileName,
   closeMethod,
-}: WriteModalProps) {
-  const [newFolderName, setNewFolderName] = useState<string>("");
+  onUpdateSuccess,
+}: WriteFileModalProps) {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    setSelectedFile(file);
+    setError("");
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!selectedFile) {
+      setError("Debes seleccionar un archivo para actualizar.");
+      return;
+    }
+
+    if (selectedFile.size === 0) {
+      setError("El archivo seleccionado no puede estar vacío.");
+      return;
+    }
+
     setError("");
+    setIsUpdating(true);
 
     try {
-      await renameFolder({
-        folderId,
-        newFolderName,
+      await updateFile({
+        fileId,
+        file: selectedFile,
       });
 
-      console.log("Cambio de nombre de la carpeta exitoso");
-    } catch (error) {
+      onUpdateSuccess?.();
+      closeMethod();
+    } catch (updateError) {
       setError(
-        error instanceof Error
-          ? error.message
-          : "No se pudo cambiar el nombre de la carpeta",
+        updateError instanceof Error
+          ? updateError.message
+          : "No se pudo actualizar el archivo.",
       );
+    } finally {
+      setIsUpdating(false);
     }
   }
 
   return (
-    <div className="rename-modal-overlay">
-      <form className="rename-modal-content" onSubmit={handleSubmit}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          className="rename-modal__svg"
-        >
-          <path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34" />
-          <path d="M14 2v5a1 1 0 0 0 1 1h5" />
-          <path d="M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z" />
-        </svg>
-        <h2>Renombrar Carpeta</h2>
-        <p>Coloca el nuevo nombre de la carpeta</p>
-        <div className="rename-modal__input-wrapper">
-          <input
-            name="login"
-            className="rename-modal__input"
-            type="text"
-            placeholder="Ingrese el nuevo nombre"
-            onChange={(event) => setNewFolderName(event.target.value)}
-          />
-        </div>
-        <div className="rename-modal__button-wrapper">
+    <div className="upload-file-modal-overlay">
+      <form className="upload-file-modal-content" onSubmit={handleSubmit}>
+        <h2>Actualizar archivo</h2>
+        <p>
+          Selecciona un nuevo contenido para reemplazar "<span>{fileName}</span>".
+        </p>
+
+        <label htmlFor="update-file-input">Nuevo archivo</label>
+        <input
+          id="update-file-input"
+          className="upload-file-modal__file-input"
+          type="file"
+          onChange={handleFileChange}
+          disabled={isUpdating}
+        />
+        <p className="upload-file-modal__selected-file">
+          {selectedFile
+            ? `Archivo seleccionado: ${selectedFile.name}`
+            : "No has seleccionado un archivo."}
+        </p>
+
+        {error && <p className="upload-file-modal__error">{error}</p>}
+
+        <div className="upload-file-modal__button-wrapper">
           <button
-            className="rename-modal__button"
-            onClick={() => closeMethod()}
+            className="upload-file-modal__button"
             type="button"
+            onClick={closeMethod}
+            disabled={isUpdating}
           >
-            No, mantener carpeta
+            Cancelar
           </button>
           <button
-            className="rename-modal__button rename-modal__button--yes"
+            className="upload-file-modal__button upload-file-modal__button--submit"
             type="submit"
+            disabled={isUpdating || !selectedFile}
           >
-            Si, borrar carpeta
+            {isUpdating ? "Actualizando..." : "Actualizar archivo"}
           </button>
         </div>
       </form>

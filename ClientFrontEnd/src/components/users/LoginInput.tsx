@@ -2,44 +2,68 @@ import { useState } from "react";
 import "../../styles/user/LoginInput.css";
 
 interface LoginInputProps {
+  id?: string;
+  name?: string;
   text: string;
-  placeholder?: string; // Opcional
+  placeholder?: string;
   isPassword: boolean;
   isWrong?: boolean;
+  errorMessage?: string;
+  autoComplete?: string;
+  disabled?: boolean;
   onchange: (event: string) => void;
-  isvariant? : boolean;
+  isvariant?: boolean;
 }
 
 function LoginInput({
+  id,
+  name,
   text,
   placeholder = "Sin descripción",
   isPassword,
   isWrong,
+  errorMessage,
+  autoComplete,
+  disabled,
   onchange,
   isvariant,
 }: LoginInputProps) {
   const [isFocused, setIsFocused] = useState(false);
-  const [showPassword, setShowPassword] = useState(isPassword);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const inputId = id || (name ? `input-${name}` : undefined);
 
   return (
     <div className="form-item">
       <input
+        id={inputId}
+        name={name || "login"}
         className={
           isWrong ? "form__input form__input--wrong" : "form__input"
         }
-        type={showPassword ? "password" : "text"}
-        name="login"
+        type={isPassword ? (isPasswordVisible ? "text" : "password") : "text"}
         placeholder={isFocused ? placeholder : ""}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         required
-        autoComplete="off"
+        autoComplete={autoComplete}
+        disabled={disabled}
         onChange={(event) => onchange(event.target.value)}
       />
-      <label className={isvariant? "form-item__label--variant": ""}>{text}</label>
-      {isPassword ? SeePasswordButton(showPassword, setShowPassword) : null}
+      <label htmlFor={inputId} className={isvariant ? "form-item__label--variant" : ""}>
+        {text}
+      </label>
+      {isPassword
+        ? SeePasswordButton(isPasswordVisible, () =>
+          setIsPasswordVisible(!isPasswordVisible),
+        )
+        : null}
 
-      {isWrong ? <p className="wrong-message">La contraseña es incorrecta</p> : null}
+      {isWrong ? (
+        <p className="wrong-message">
+          {errorMessage || "La contraseña es incorrecta"}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -47,17 +71,17 @@ function LoginInput({
 export default LoginInput;
 
 const SeePasswordButton = (
-  seePassword: boolean,
-  setSeePassword: (a: boolean) => void,
+  isVisible: boolean,
+  toggleVisible: () => void,
 ) => {
   return (
     <button
       type="button"
       className="btn-svg"
-      onClick={() => setSeePassword(!seePassword)}
-      aria-label={seePassword ? "Ocultar contraseña" : "Ver contraseña"}
+      onClick={toggleVisible}
+      aria-label={isVisible ? "Ocultar contraseña" : "Ver contraseña"}
     >
-      {seePassword ? (
+      {isVisible ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

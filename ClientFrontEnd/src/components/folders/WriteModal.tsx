@@ -50,7 +50,9 @@ export function WriteModal({
           <path d="M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z" />
         </svg>
         <h2>Renombrar Carpeta</h2>
-        <p>Coloca el nuevo nombre de la carpeta</p>
+        <p>
+          Coloca el nuevo nombre de la carpeta "<span>{folderName}</span>"
+        </p>
         <div className="rename-modal__input-wrapper">
           <input
             name="login"
@@ -60,6 +62,7 @@ export function WriteModal({
             onChange={(event) => setNewFolderName(event.target.value)}
           />
         </div>
+        {error && <p className="rename-modal__error">{error}</p>}
         <div className="rename-modal__button-wrapper">
           <button
             className="rename-modal__button"

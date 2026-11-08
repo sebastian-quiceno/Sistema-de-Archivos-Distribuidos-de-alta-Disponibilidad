@@ -6,6 +6,7 @@ interface BotonProps {
   backgroundColor?: string;
   fontColor: string;
   isSubmit?: boolean;
+  disabled?: boolean;
   onClick?: () => void;
 }
 
@@ -13,17 +14,18 @@ export const Button = ({
   text,
   backgroundColor,
   fontColor,
-  isSubmit,
+  isSubmit = false,
+  disabled = false,
   onClick,
 }: BotonProps) => {
-
-  const finalBackground = backgroundColor === undefined ? 'transparent' : backgroundColor;
+  const finalBackground = backgroundColor === undefined ? "transparent" : backgroundColor;
 
   return (
     <button
       className="btn"
-      onClick={onClick? onClick: ( () => null )} 
-      type={(isSubmit === null || isSubmit === false)? "button": "submit"}
+      disabled={disabled}
+      onClick={onClick}
+      type={isSubmit ? "submit" : "button"}
       style={
         {
           "--bg-color": finalBackground,

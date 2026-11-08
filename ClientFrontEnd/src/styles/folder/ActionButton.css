@@ -20,6 +20,11 @@
   cursor: pointer;
 }
 
+.acction-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .file-block-actions .acction-button {
   flex: 1 1 0;
   width: auto;

@@ -5,8 +5,9 @@ export interface UploadFileRequestType{
     fileName?: string;
 } 
 
-export interface DownloadFileType{
-    fileId: string
+export interface DownloadFileType {
+  fileId: string;
+  fileName?: string;
 }
 
 export interface UpdateFileRequestType {

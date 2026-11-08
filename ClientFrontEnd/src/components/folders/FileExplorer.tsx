@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import "../../styles/folder/FileExplorer.css";
 
@@ -30,6 +30,20 @@ export function FileExplorer({
   const [folders, setFolders] = useState<FolderType[]>([]);
   const [files, setFiles] = useState<MetadataFileType[]>([]);
   const [error, setError] = useState("");
+
+  const refreshContent = useCallback(async () => {
+    if (!folderId) return;
+    try {
+      const [subfolders, filesResponse] = await Promise.all([
+        getSubfolders(folderId),
+        getFiles(folderId),
+      ]);
+      setFolders(subfolders);
+      setFiles(filesResponse);
+    } catch (err: unknown) {
+      console.error("Error al refrescar contenido:", err);
+    }
+  }, [folderId]);
 
   useEffect(() => {
     if (!folderId) {
@@ -112,7 +126,21 @@ export function FileExplorer({
         ))}
         
         {files.map((item: MetadataFileType) => (
-          <FileBlock key={item.id} fileId={item.id} fileName={item.fileName} fileType={item.fileTypeName} modifiedDate={new Date(item.lastTimeModified)} size={item.bytesSize} />
+          <FileBlock
+            key={item.id}
+            fileId={item.id}
+            fileName={item.fileName}
+            fileType={item.fileTypeName}
+            modifiedDate={new Date(item.lastTimeModified)}
+            size={item.bytesSize}
+            onFileDeleted={() => {
+              setFiles((prev) => prev.filter((f) => f.id !== item.id));
+              refreshContent();
+            }}
+            onFileUpdated={() => {
+              refreshContent();
+            }}
+          />
         ))}
       </div>
     </div>

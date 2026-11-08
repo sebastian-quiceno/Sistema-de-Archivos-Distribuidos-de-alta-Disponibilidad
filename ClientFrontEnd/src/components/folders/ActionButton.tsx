@@ -6,13 +6,20 @@ interface ActionButtonProps {
   variant: ButtonVariant;
   onClick: () => void;
   disabled?: boolean;
+  title?: string;
 }
 
-export function ActionButton({ variant, onClick, disabled }: ActionButtonProps) {
+export function ActionButton({ variant, onClick, disabled, title }: ActionButtonProps) {
   const Icon = iconMap[variant];
 
   return (
-    <button className="acction-button" type="button" onClick={onClick} disabled = {disabled}>
+    <button
+      className="acction-button"
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+    >
       <Icon />
     </button>
   );

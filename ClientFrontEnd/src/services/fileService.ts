@@ -102,7 +102,7 @@ export async function checkFileIntegrity(pageSize?: number): Promise<IntegrityCh
   }
 }
 
-export const downloadFile = async ({ fileId }: DownloadFileType): Promise<void> => {
+export const downloadFile = async ({ fileId, fileName: requestedFileName }: DownloadFileType): Promise<void> => {
   if (!fileId?.trim()) {
     throw new Error("El identificador del archivo es obligatorio");
   }
@@ -119,10 +119,10 @@ export const downloadFile = async ({ fileId }: DownloadFileType): Promise<void> 
 
     const contentDisposition = response.headers["content-disposition"];
     const encodedFileName = contentDisposition?.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
-    const fileName = encodedFileName
+    const headerFileName = encodedFileName
       ? decodeURIComponent(encodedFileName)
       : contentDisposition?.match(/filename="?([^";]+)"?/i)?.[1];
-    const downloadName = fileName?.trim() || `archivo-${fileId}`;
+    const downloadName = headerFileName?.trim() || requestedFileName?.trim() || `archivo-${fileId}`;
     const downloadUrl = URL.createObjectURL(response.data);
     const link = document.createElement("a");
 

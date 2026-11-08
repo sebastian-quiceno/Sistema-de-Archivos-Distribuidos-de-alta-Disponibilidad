@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "../../styles/pages/SignInPage.css";
 import beigeLogo from "../../assets/AilatanLogoBeige.png";
 
@@ -16,18 +17,27 @@ const RETURN_BUTTON_TEXT = "#7B7D9F";
 
 function SignInPage() {
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
 
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername || !password) {
+      setError("Por favor complete todos los campos");
+      return;
+    }
+
+    setIsLoading(true);
     try {
       const response = await signIn({
-        username,
+        username: trimmedUsername,
         password,
       });
 
@@ -35,10 +45,13 @@ function SignInPage() {
       login(response);
 
       console.log("Usuario autenticado");
+      navigate("/", { replace: true });
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "No se pudo iniciar sesión",
       );
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -55,23 +68,40 @@ function SignInPage() {
         <form className="modal__form" onSubmit={handleSubmit}>
           <div className="flex-1">
             <LoginInput
+              id="signin-username"
+              name="username"
               text="Nombre de usuario"
               isPassword={false}
               placeholder="Ingrese el nombre de su usuario"
-              onchange={setUsername}
+              autoComplete="username"
+              disabled={isLoading}
+              onchange={(val) => {
+                setUsername(val);
+                if (error) setError("");
+              }}
             />
           </div>
           <div className="flex-2">
             <LoginInput
+              id="signin-password"
+              name="password"
               text="Contraseña"
               isPassword={true}
               placeholder="Ingrese su contraseña"
-              onchange={setPassword}
+              autoComplete="current-password"
+              disabled={isLoading}
+              onchange={(val) => {
+                setPassword(val);
+                if (error) setError("");
+              }}
             />
           </div>
           <div className="flex-3">
             <p>
-              ¿No tienes cuenta? <span>¡Crea Una!</span>{" "}
+              ¿No tienes cuenta?{" "}
+              <Link to="/signup" style={{ textDecoration: "none" }}>
+                <span>¡Crea Una!</span>
+              </Link>
             </p>
           </div>
           <div className="flex-4">
@@ -79,16 +109,18 @@ function SignInPage() {
               text="Volver"
               fontColor={RETURN_BUTTON_TEXT}
               backgroundColor={RETURN_BUTTON_BACKGROUND}
-              onClick={() => console.log("Se retrocedio")}
+              onClick={() => navigate(-1)}
+              disabled={isLoading}
             />
             <Button
-              text="Acceder"
+              text={isLoading ? "Accediendo..." : "Acceder"}
               fontColor={SUBMIT_BUTTON_TEXT}
               backgroundColor={SUBMIT_BUTTON_BACKGROUND}
-              isSubmit = {true}
+              isSubmit={true}
+              disabled={isLoading}
             />
           </div>
-          {error && <p>{error}</p>}
+          {error && <p className="error-message">{error}</p>}
         </form>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AUTH_STORAGE_KEY, getStoredAuth } from "../services/authStorage";
+import { clearStoredAuth, getStoredAuth } from "../services/authStorage";
 
 export const apiClient = axios.create({
   baseURL: "http://localhost:8080/api",
@@ -7,6 +7,13 @@ export const apiClient = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+type UnauthorizedHandler = () => void;
+let unauthorizedHandler: UnauthorizedHandler | null = null;
+
+export function setUnauthorizedHandler(handler: UnauthorizedHandler | null) {
+  unauthorizedHandler = handler;
+}
 
 apiClient.interceptors.request.use(
   (config) => {
@@ -25,8 +32,12 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
-      window.location.href = "/signin";
+      clearStoredAuth();
+      if (unauthorizedHandler) {
+        unauthorizedHandler();
+      } else {
+        window.location.href = "/signin";
+      }
     }
 
     return Promise.reject(error);

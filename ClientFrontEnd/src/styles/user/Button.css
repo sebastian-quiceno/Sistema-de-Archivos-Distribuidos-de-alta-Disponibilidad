@@ -14,3 +14,8 @@
 .btn-dinamico:hover {
   opacity: 0.9;
 }
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

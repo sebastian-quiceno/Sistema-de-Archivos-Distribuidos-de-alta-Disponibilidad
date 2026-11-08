@@ -5,9 +5,11 @@ import { useState } from "react";
 import { ActionButton } from "./ActionButton";
 import { File } from "./File";
 import { type FileVariant } from "../../types/fileType";
+import { downloadFile } from "../../services/fileService";
+import { formatBytes, formatDate } from "../../utils/formatters";
 
-import { DeleteModal } from "../../components/folders/DeleteModal";
-import { WriteModal } from "../../components/folders/WriteModal";
+import { DeleteFileModal } from "./DeleteFileModal";
+import { WriteFileModal } from "./WriteFileModal";
 
 interface FileBlockProps {
   fileId: string;
@@ -15,6 +17,8 @@ interface FileBlockProps {
   fileType: FileVariant;
   modifiedDate: Date;
   size: number;
+  onFileDeleted?: () => void;
+  onFileUpdated?: () => void;
 }
 
 export function FileBlock({
@@ -23,9 +27,24 @@ export function FileBlock({
   fileType,
   modifiedDate,
   size,
+  onFileDeleted,
+  onFileUpdated,
 }: FileBlockProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showWriteModal, setShowWriteModal] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    try {
+      await downloadFile({ fileId, fileName });
+    } catch (err: unknown) {
+      console.error("Error al descargar archivo:", err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <div className="file-block">
@@ -33,30 +52,37 @@ export function FileBlock({
         <File fileName={fileName} fileType={fileType} />
       </div>
 
-      <p className="file-block__text">{modifiedDate.getDate()}</p>
-      <p className="file-block__text">{size}</p>
+      <p className="file-block__text">{formatDate(modifiedDate)}</p>
+      <p className="file-block__text">{formatBytes(size)}</p>
 
       <div className="file-block-actions">
         <ActionButton onClick={() => setShowWriteModal(true)} variant="write" />
         {showWriteModal ? (
-          <WriteModal
-            folderId={fileId}
-            folderName={fileName}
+          <WriteFileModal
+            fileId={fileId}
+            fileName={fileName}
             closeMethod={() => setShowWriteModal(false)}
+            onUpdateSuccess={onFileUpdated}
           />
         ) : null}
 
-        <ActionButton onClick={() => null} variant="download" />
+        <ActionButton
+          onClick={handleDownload}
+          variant="download"
+          disabled={isDownloading}
+          title={isDownloading ? "Descargando..." : "Descargar archivo"}
+        />
 
         <ActionButton
           onClick={() => setShowDeleteModal(true)}
           variant="delete"
         />
         {showDeleteModal ? (
-          <DeleteModal
-            folderId={fileId}
-            folderName={fileName}
+          <DeleteFileModal
+            fileId={fileId}
+            fileName={fileName}
             closeMethod={() => setShowDeleteModal(false)}
+            onDeleteSuccess={onFileDeleted}
           />
         ) : null}
       </div>
