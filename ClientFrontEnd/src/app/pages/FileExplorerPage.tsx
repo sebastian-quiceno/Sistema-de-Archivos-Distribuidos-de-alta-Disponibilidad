@@ -5,6 +5,7 @@ import { LogoRow } from "../../components/folders/LogoRow";
 import { AsideButtonsFileExplorer } from "../../components/folders/AsideButtonsFileExplorer";
 import { UploadFileModal } from "../../components/folders/UploadFileModal";
 import { CreateFolderModal } from "../../components/folders/CreateFolderModal";
+import { SearchBar } from "../../components/folders/SearchBar";
 import { UserPerfileButton } from "../../components/users/UserPerfileButton";
 import { FileExplorer } from "../../components/folders/FileExplorer";
 import { useAuth } from "../../hooks/users/useAuth";
@@ -14,6 +15,7 @@ export function FileExplorerPage() {
   const { auth } = useAuth();
   const rootFolderId = auth?.rootFolderId?.trim() || null;
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [explorerVersion, setExplorerVersion] = useState(0);
@@ -23,6 +25,7 @@ export function FileExplorerPage() {
 
   const handleCurrentFolderChange = useCallback((folderId: string) => {
     setCurrentFolderId(folderId);
+    setSearchQuery("");
   }, []);
 
   const canNavigateUp = Boolean(
@@ -57,9 +60,11 @@ export function FileExplorerPage() {
         </div>
       </aside>
       <main className="file-explorer-page__main">
-        <nav>
-          <div className="file-explorer-page__main__search">AGREGAR BARRA BUSQUEDA</div>
-          <div className="file-explorer-page__main__user">
+        <nav className="file-explorer-page__nav">
+          <div className="file-explorer-page__nav-search file-explorer-page__main__search">
+            <SearchBar value={searchQuery} onChange={setSearchQuery} />
+          </div>
+          <div className="file-explorer-page__nav-user file-explorer-page__main__user">
             <UserPerfileButton />
           </div>
         </nav>
@@ -67,6 +72,7 @@ export function FileExplorerPage() {
           <FileExplorer
             refreshToken={explorerVersion}
             navigateUpToken={navigateUpToken}
+            searchQuery={searchQuery}
             onCurrentFolderChange={handleCurrentFolderChange}
           />
         </div>

@@ -83,14 +83,16 @@ export function AsideButtonsFileExplorer({
         onClick={onNavigateUp}
         disabled={navigateUpDisabled}
       />
-      <ButtonWithIcon
-        Icono={MoreIcon}
-        background="#A48370"
-        color="#EDD9CB"
-        colorIco="#EDD9CB"
-        text="Ver mas"
-        onClick={onOpenMore}
-      />
+      {onOpenMore && (
+        <ButtonWithIcon
+          Icono={MoreIcon}
+          background="#A48370"
+          color="#EDD9CB"
+          colorIco="#EDD9CB"
+          text="Ver mas"
+          onClick={onOpenMore}
+        />
+      )}
     </div>
   );
 }

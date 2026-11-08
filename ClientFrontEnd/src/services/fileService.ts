@@ -9,7 +9,13 @@ import {
 } from "../types/fileType";
 
 
-export const uploadFile = async ({ file, folderId, fileTypeName, fileName }: UploadFileRequestType): Promise<void> => {
+export const uploadFile = async ({
+  file,
+  folderId,
+  fileTypeName,
+  fileName,
+  onProgress,
+}: UploadFileRequestType): Promise<void> => {
   if (!file || file.size === 0) {
     throw new Error("El archivo es obligatorio y no puede estar vacío");
   }
@@ -33,7 +39,21 @@ export const uploadFile = async ({ file, folderId, fileTypeName, fileName }: Upl
   try {
     await apiClient.post<void>(
       "/files/upload",
-      request
+      request,
+      {
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total && progressEvent.total > 0 && onProgress) {
+            const percent = Math.min(
+              100,
+              Math.max(
+                0,
+                Math.round((progressEvent.loaded * 100) / progressEvent.total),
+              ),
+            );
+            onProgress(percent);
+          }
+        },
+      },
     );
 
   } catch (error: unknown) {

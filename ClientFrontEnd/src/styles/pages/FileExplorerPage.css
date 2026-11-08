@@ -23,3 +23,21 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+.file-explorer-page__nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 0 20px 0;
+  gap: 20px;
+}
+
+.file-explorer-page__nav-search {
+  flex: 1;
+  max-width: 520px;
+}
+
+.file-explorer-page__nav-user {
+  flex-shrink: 0;
+}

@@ -48,11 +48,64 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 0.9rem;
+  color: var(--color-text-modal-dark);
 }
 
 .upload-file-modal__error {
   color: var(--color-input-error) !important;
   font-weight: 600;
+  font-size: 0.85rem;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.upload-file-modal__progress-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.upload-file-modal__progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-modal-dark);
+}
+
+.upload-file-modal__progress-status {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-file-modal__progress-percent {
+  font-variant-numeric: tabular-nums;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.upload-file-modal__progress-track {
+  width: 100%;
+  height: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.upload-file-modal__progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--color-icon-file-document, #88bec6),
+    var(--color-input-focus-hover, #276ad6)
+  );
+  border-radius: 999px;
+  transition: width 0.2s ease-in-out;
 }
 
 .upload-file-modal__button-wrapper {

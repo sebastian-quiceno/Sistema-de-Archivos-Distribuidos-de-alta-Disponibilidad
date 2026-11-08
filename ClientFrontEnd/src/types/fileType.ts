@@ -1,8 +1,9 @@
-export interface UploadFileRequestType{
+export interface UploadFileRequestType {
     file: File;
     folderId: string;
     fileTypeName: string;
     fileName?: string;
+    onProgress?: (percent: number) => void;
 } 
 
 export interface DownloadFileType {

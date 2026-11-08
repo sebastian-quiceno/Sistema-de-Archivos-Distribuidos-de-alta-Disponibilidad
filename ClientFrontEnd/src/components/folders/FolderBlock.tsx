@@ -12,7 +12,7 @@ interface FolderBlockProps {
   folderId: string;
   folderName: string;
   modifiedDate: Date;
-  onOpen?: (folderId: string) => void;
+  onOpen?: (folderId: string, folderName: string) => void;
   onFolderDeleted?: (folderId: string) => void;
   onFolderRenamed?: (newFolderName: string) => void;
 }
@@ -33,7 +33,7 @@ export function FolderBlock({
       <button
         className="folder-block__file-wrapper"
         type="button"
-        onClick={() => onOpen?.(folderId)}
+        onClick={() => onOpen?.(folderId, folderName)}
       >
         <File fileName={folderName} fileType="folder" />
       </button>

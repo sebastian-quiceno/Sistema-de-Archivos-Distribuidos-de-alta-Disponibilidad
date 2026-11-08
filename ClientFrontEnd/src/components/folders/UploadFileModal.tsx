@@ -3,12 +3,21 @@ import { useState } from "react";
 import "../../styles/folder/UploadFileModal.css";
 import { uploadFile } from "../../services/fileService";
 import type { FileVariant } from "../../types/fileType";
+import { formatBytes } from "../../utils/formatters";
 
 interface UploadFileModalProps {
   folderId: string;
   closeMethod: () => void;
   onUploadSuccess?: () => void;
 }
+
+const ACCEPTED_FILE_EXTENSIONS =
+  ".doc,.docx,.pdf,.png,.jpg,.jpeg,.mp3,.mp4";
+const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100 MB
+const INVALID_FORMAT_ERROR =
+  "El formato del archivo no es compatible. Formatos admitidos: Documentos (DOC, PDF), Imágenes (PNG, JPG) y Multimedia (MP3, MP4).";
+const MAX_SIZE_ERROR =
+  "El archivo supera el tamaño máximo permitido de 100 MB.";
 
 function getFileType(fileName: string): FileVariant {
   const extension = fileName.split(".").pop()?.toLowerCase();
@@ -42,16 +51,55 @@ export function UploadFileModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [statusMessage, setStatusMessage] = useState("");
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
-    setSelectedFile(file);
     setError("");
+    setUploadProgress(0);
+    setStatusMessage("");
 
-    if (file && !fileName.trim()) {
+    if (!file) {
+      setSelectedFile(null);
+      return;
+    }
+
+    if (file.size === 0) {
+      setSelectedFile(file);
+      setError("El archivo seleccionado está vacío.");
+      return;
+    }
+
+    const fileType = getFileType(file.name);
+    if (fileType === "noType") {
+      setSelectedFile(file);
+      setError(INVALID_FORMAT_ERROR);
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      setSelectedFile(file);
+      setError(MAX_SIZE_ERROR);
+      return;
+    }
+
+    setSelectedFile(file);
+    if (!fileName.trim()) {
       setFileName(file.name.replace(/\.[^/.]+$/, ""));
     }
   }
+
+  const isFileTypeValid = selectedFile
+    ? getFileType(selectedFile.name) !== "noType"
+    : false;
+  const isFileSizeValid = selectedFile
+    ? selectedFile.size > 0 && selectedFile.size <= MAX_FILE_SIZE_BYTES
+    : false;
+  const canSubmit =
+    Boolean(
+      selectedFile && fileName.trim() && isFileTypeValid && isFileSizeValid,
+    ) && !isUploading;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,16 +115,46 @@ export function UploadFileModal({
       return;
     }
 
+    const fileType = getFileType(selectedFile.name);
+    if (fileType === "noType") {
+      setError(INVALID_FORMAT_ERROR);
+      return;
+    }
+
+    if (selectedFile.size === 0) {
+      setError("El archivo seleccionado está vacío.");
+      return;
+    }
+
+    if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
+      setError(MAX_SIZE_ERROR);
+      return;
+    }
+
     setError("");
     setIsUploading(true);
+    setUploadProgress(0);
+    setStatusMessage("Subiendo archivo...");
 
     try {
       await uploadFile({
         file: selectedFile,
         folderId,
-        fileTypeName: getFileType(selectedFile.name),
+        fileTypeName: fileType,
         fileName: trimmedFileName,
+        onProgress: (percent) => {
+          setUploadProgress(percent);
+          if (percent >= 100) {
+            setStatusMessage("Procesando y distribuyendo chunks en nodos...");
+          } else {
+            setStatusMessage(`Subiendo archivo... ${percent}%`);
+          }
+        },
       });
+
+      setStatusMessage("Procesando y distribuyendo chunks en nodos...");
+      await new Promise((resolve) => setTimeout(resolve, 600));
+
       onUploadSuccess?.();
       closeMethod();
     } catch (uploadError) {
@@ -85,6 +163,7 @@ export function UploadFileModal({
           ? uploadError.message
           : "No se pudo subir el archivo.",
       );
+      setStatusMessage("");
     } finally {
       setIsUploading(false);
     }
@@ -105,7 +184,7 @@ export function UploadFileModal({
           placeholder="Ingresa el nombre del archivo"
           onChange={(event) => {
             setFileName(event.target.value);
-            setError("");
+            if (error) setError("");
           }}
           disabled={isUploading}
         />
@@ -115,12 +194,40 @@ export function UploadFileModal({
           id="upload-file-input"
           className="upload-file-modal__file-input"
           type="file"
+          accept={ACCEPTED_FILE_EXTENSIONS}
           onChange={handleFileChange}
           disabled={isUploading}
         />
         <p className="upload-file-modal__selected-file">
-          {selectedFile ? `Archivo seleccionado: ${selectedFile.name}` : "No has seleccionado un archivo."}
+          {selectedFile
+            ? `Archivo seleccionado: ${selectedFile.name} (${formatBytes(selectedFile.size)})`
+            : "Formatos admitidos: .doc, .docx, .pdf, .png, .jpg, .jpeg, .mp3, .mp4 (máx. 100 MB)"}
         </p>
+
+        {isUploading && (
+          <div className="upload-file-modal__progress-wrapper">
+            <div className="upload-file-modal__progress-info">
+              <span className="upload-file-modal__progress-status">
+                {statusMessage}
+              </span>
+              <span className="upload-file-modal__progress-percent">
+                {uploadProgress}%
+              </span>
+            </div>
+            <div
+              className="upload-file-modal__progress-track"
+              role="progressbar"
+              aria-valuenow={uploadProgress}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            >
+              <div
+                className="upload-file-modal__progress-fill"
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
 
         {error && <p className="upload-file-modal__error">{error}</p>}
 
@@ -136,7 +243,7 @@ export function UploadFileModal({
           <button
             className="upload-file-modal__button upload-file-modal__button--submit"
             type="submit"
-            disabled={isUploading}
+            disabled={!canSubmit}
           >
             {isUploading ? "Subiendo..." : "Subir archivo"}
           </button>
