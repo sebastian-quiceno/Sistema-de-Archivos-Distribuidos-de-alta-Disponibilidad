@@ -42,3 +42,4 @@ app:
     session-token: ${AWS_SESSION_TOKEN:test-session-token}
     s3:
       bucket: ${S3_BUCKET_NAME:test-bucket}
+      endpoint: ${AWS_ENDPOINT_URL:${S3_ENDPOINT_URL:}}
