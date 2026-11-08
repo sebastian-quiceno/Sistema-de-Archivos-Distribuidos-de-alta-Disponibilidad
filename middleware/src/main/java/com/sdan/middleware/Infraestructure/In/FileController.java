@@ -6,6 +6,8 @@ import com.sdan.middleware.Application.Inputs.Commands.UpdateFileCommand;
 import com.sdan.middleware.Application.Outputs.FileDownloadOutput;
 import com.sdan.middleware.Application.Outputs.IntegrityCheckReport;
 import com.sdan.middleware.Application.Outputs.MetadataFileOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/files")
 public class FileController {
+
+    private static final Logger log = LoggerFactory.getLogger(FileController.class);
 
     private final UploadFileUseCase uploadFileUseCase;
     private final GetFileUseCase getFileUseCase;
@@ -109,17 +113,36 @@ public class FileController {
 
         FileDownloadOutput downloadOutput = getFileUseCase.execute(id);
 
-        StreamingResponseBody responseBody = outputStream -> {
-            try (InputStream inputStream = downloadOutput.stream()) {
-                inputStream.transferTo(outputStream);
-                outputStream.flush();
-            }
-        };
-
         String rawFileName = downloadOutput.fileName();
         String safeFileName = (rawFileName != null && !rawFileName.isBlank())
                 ? rawFileName.replace("\r", "").replace("\n", "").replace("\"", "")
                 : id.toString();
+
+        StreamingResponseBody responseBody = outputStream -> {
+            log.info("Iniciando streaming de descarga para el archivo '{}' (ID: {})...", safeFileName, id);
+            try (InputStream inputStream = downloadOutput.stream()) {
+                byte[] buffer = new byte[65536]; // 64 KB buffer
+                int bytesRead;
+                long totalBytes = 0;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                    outputStream.flush();
+                    totalBytes += bytesRead;
+                }
+                log.info("Streaming completado para '{}' (ID: {}): {} bytes transferidos con éxito.", safeFileName, id, totalBytes);
+            } catch (IOException e) {
+                if (e.getClass().getSimpleName().contains("ClientAbortException") ||
+                    (e.getMessage() != null && e.getMessage().toLowerCase().contains("broken pipe"))) {
+                    log.debug("Cliente cerró la conexión durante la descarga de '{}': {}", safeFileName, e.getMessage());
+                } else {
+                    log.error("Error de E/S durante la descarga de '{}': {}", safeFileName, e.getMessage(), e);
+                    throw e;
+                }
+            } catch (Exception e) {
+                log.error("Error inesperado durante la descarga de '{}': {}", safeFileName, e.getMessage(), e);
+                throw e;
+            }
+        };
 
         ContentDisposition contentDisposition;
         if (StandardCharsets.US_ASCII.newEncoder().canEncode(safeFileName)) {
@@ -132,10 +155,15 @@ public class FileController {
                     .build();
         }
 
-        return ResponseEntity.ok()
+        var responseBuilder = ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
-                .body(responseBody);
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
+
+        if (downloadOutput.fileSize() != null && downloadOutput.fileSize() > 0) {
+            responseBuilder.contentLength(downloadOutput.fileSize());
+        }
+
+        return responseBuilder.body(responseBody);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

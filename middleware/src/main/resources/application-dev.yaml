@@ -1,4 +1,8 @@
 spring:
+  mvc:
+    async:
+      request-timeout: -1
+
   # Perfil y configuración de la base de datos
   datasource:
     url: jdbc:h2:mem:middleware_metadata
@@ -28,11 +32,11 @@ spring:
     init:
       mode: always
 
-  # RabbitMQ en modo dev permite levantar el contexto aun si el broker no está activo localmente
+  # RabbitMQ listener activado para procesar replicación en segundo plano
   rabbitmq:
     listener:
       simple:
-        auto-startup: ${RABBITMQ_AUTO_STARTUP:false}
+        auto-startup: ${RABBITMQ_AUTO_STARTUP:true}
 
 app:
   aws:

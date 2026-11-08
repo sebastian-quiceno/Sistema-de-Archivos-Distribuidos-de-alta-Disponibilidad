@@ -7,14 +7,25 @@ import java.io.InputStream;
 import java.util.function.Consumer;
 
 public class FilePartitionService {
-    public static final int MAX_SIZE_PER_CHUNK = 32 * 1024 * 1024;
+    public static final int DEFAULT_MAX_SIZE_PER_CHUNK = 10 * 1024 * 1024;
+    public static final int MAX_SIZE_PER_CHUNK = DEFAULT_MAX_SIZE_PER_CHUNK;
+
+    private final int maxChunkSize;
+
+    public FilePartitionService() {
+        this(DEFAULT_MAX_SIZE_PER_CHUNK);
+    }
+
+    public FilePartitionService(int maxChunkSize) {
+        this.maxChunkSize = maxChunkSize > 0 ? maxChunkSize : DEFAULT_MAX_SIZE_PER_CHUNK;
+    }
 
     public int calculateTotalPartitions(long size) {
         if (size < 0) {
             throw new IllegalArgumentException("El tamaño del archivo no puede ser negativo");
         }
 
-        return (int) Math.ceilDiv(size, MAX_SIZE_PER_CHUNK);
+        return (int) Math.ceilDiv(size, maxChunkSize);
     }
 
     public void partition(InputStream input, long declaredSize, Consumer<byte[]> chunkConsumer) {
@@ -23,7 +34,7 @@ public class FilePartitionService {
         try (input) {
             byte[] chunkBytes;
 
-            while ((chunkBytes = input.readNBytes(MAX_SIZE_PER_CHUNK)).length > 0) {
+            while ((chunkBytes = input.readNBytes(maxChunkSize)).length > 0) {
 
                 totalBytesRead += chunkBytes.length;
 

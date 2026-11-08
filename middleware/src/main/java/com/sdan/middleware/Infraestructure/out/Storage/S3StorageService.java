@@ -283,9 +283,12 @@ public class S3StorageService implements IStorageService, AutoCloseable {
             if (trimmed.equalsIgnoreCase(defaultBucket)) {
                 return defaultBucket;
             }
+
+            // 4. Si se especificó un nodo o bucket explícito, usarlo directamente
+            return trimmed;
         }
 
-        // 4. Fallback al bucket principal configurado
+        // 5. Fallback al bucket principal configurado si no se especificó nodo
         if (defaultBucket != null && !defaultBucket.isBlank()) {
             return defaultBucket;
         }

@@ -13,6 +13,10 @@ spring:
   application:
     name: middleware
 
+  mvc:
+    async:
+      request-timeout: -1
+
   rabbitmq:
     host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
@@ -28,6 +32,9 @@ spring:
         missing-queues-fatal: false
 
 app:
+  storage:
+    chunk-size: ${CHUNK_SIZE:10485760}
+
   aws:
     region: ${AWS_REGION:us-east-1}
 

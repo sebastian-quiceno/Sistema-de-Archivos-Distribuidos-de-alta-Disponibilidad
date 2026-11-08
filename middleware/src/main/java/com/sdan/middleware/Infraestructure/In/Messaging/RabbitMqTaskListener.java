@@ -8,6 +8,8 @@ import com.sdan.middleware.Application.Ports.Repositories.IChunkRepository;
 import com.sdan.middleware.Application.Ports.Storage.IStorageService;
 import com.sdan.middleware.Domain.Entities.Chunk;
 import com.sdan.middleware.Infraestructure.Config.RabbitMqConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,8 @@ import java.util.Optional;
 
 @Component
 public class RabbitMqTaskListener {
+
+    private static final Logger log = LoggerFactory.getLogger(RabbitMqTaskListener.class);
 
     private final IChunkRepository chunkRepository;
     private final ChunkReplicationService chunkReplicationService;
@@ -37,20 +41,33 @@ public class RabbitMqTaskListener {
             return;
         }
 
+        log.info("Recibida tarea de replicación para el fragmento '{}' (Factor: {})",
+                message.chunkId(), message.replicationFactor());
+
         Optional<Chunk> chunkOpt = chunkRepository.getById(message.chunkId());
         if (chunkOpt.isEmpty()) {
+            log.warn("No se encontró el fragmento '{}' en la base de datos para replicar", message.chunkId());
             return;
         }
 
-        List<Chunk> replicas = chunkReplicationService.replicateFile(
-                chunkOpt.get(),
-                message.replicationFactor() > 0 ? message.replicationFactor() : ChunkReplicationService.REPLICATION_FACTOR
-        );
+        try {
+            int factor = message.replicationFactor() > 0 ? message.replicationFactor() : ChunkReplicationService.REPLICATION_FACTOR;
+            List<Chunk> replicas = chunkReplicationService.replicateFile(chunkOpt.get(), factor);
 
-        if (replicas != null) {
-            for (Chunk replica : replicas) {
-                chunkRepository.save(replica);
+            if (replicas != null && !replicas.isEmpty()) {
+                for (Chunk replica : replicas) {
+                    chunkRepository.save(replica);
+                    log.info("Réplica del fragmento '{}' guardada en nodo '{}' (bucket '{}')",
+                            message.chunkId(), replica.getNode().getName().getValue(), replica.getNode().getName().getValue());
+                }
+                log.info("Replicación completada con éxito: {} réplicas creadas para el fragmento '{}'",
+                        replicas.size(), message.chunkId());
+            } else {
+                log.warn("No se generaron réplicas para el fragmento '{}'", message.chunkId());
             }
+        } catch (Exception e) {
+            log.error("Error durante la replicación del fragmento '{}': {}", message.chunkId(), e.getMessage(), e);
+            throw e;
         }
     }
 

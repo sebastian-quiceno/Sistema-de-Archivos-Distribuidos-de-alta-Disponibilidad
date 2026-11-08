@@ -35,6 +35,6 @@ public class GetFileUseCase {
         }
 
         InputStream stream = fileReconstructionService.mergeFile(file);
-        return new FileDownloadOutput(stream, file.getName().getValue());
+        return new FileDownloadOutput(stream, file.getName().getValue(), file.getSize());
     }
 }

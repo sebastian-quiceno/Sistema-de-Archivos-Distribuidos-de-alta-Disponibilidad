@@ -15,6 +15,7 @@ import com.sdan.middleware.Application.Ports.Storage.IFileReconstructionService;
 import com.sdan.middleware.Application.Ports.Storage.IFileUpdateService;
 import com.sdan.middleware.Application.Ports.Storage.IStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,8 +25,9 @@ public class FileUseCaseConfig {
     // --- Servicios de soporte / dominio para archivos ---
 
     @Bean
-    public FilePartitionService filePartitionService() {
-        return new FilePartitionService();
+    public FilePartitionService filePartitionService(
+            @Value("${app.storage.chunk-size:10485760}") int chunkSize) {
+        return new FilePartitionService(chunkSize);
     }
 
     @Bean

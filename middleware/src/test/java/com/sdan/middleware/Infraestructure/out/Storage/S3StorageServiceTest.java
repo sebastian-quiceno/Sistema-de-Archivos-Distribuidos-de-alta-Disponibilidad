@@ -404,9 +404,9 @@ class S3StorageServiceTest {
     }
 
     @Test
-    @DisplayName("resolveBucket utiliza el bucket por defecto si el nodo no está en el mapa")
+    @DisplayName("resolveBucket utiliza el nombre del nodo directamente o el bucket por defecto si es nulo")
     void resolveBucket_fallsBackToDefaultBucket() {
-        assertEquals(defaultBucket, storageService.resolveBucket("node-999"));
+        assertEquals("node-999", storageService.resolveBucket("node-999"));
         assertEquals(defaultBucket, storageService.resolveBucket(null));
         assertEquals(defaultBucket, storageService.resolveBucket(""));
     }
