@@ -209,7 +209,7 @@ const MP4 = () => {
         strokeWidth="1.5"
         d="M27 .5V8a4 4 0 0 0 4 4h7.5"
       />
-      <rect width="29" height="16" x="1" y="18" fill="#F6ECDEr" rx="2" />
+      <rect width="29" height="16" x="1" y="18" fill="#F6ECDE" rx="2" />
       <path
         fill="currentColor"
         strokeWidth="1"

@@ -9,4 +9,17 @@
 
 .file-explorer-actions .button-with-icon {
   flex: 1;
+  min-height: 52px;
+}
+
+@media (max-width: 900px) {
+  .file-explorer-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .file-explorer-actions .button-with-icon {
+    min-height: 48px;
+  }
 }

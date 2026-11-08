@@ -14,7 +14,7 @@ export function ActionButton({ variant, onClick, disabled, title }: ActionButton
 
   return (
     <button
-      className="acction-button"
+      className="action-button"
       type="button"
       onClick={onClick}
       disabled={disabled}

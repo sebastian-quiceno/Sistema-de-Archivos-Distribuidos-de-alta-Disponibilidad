@@ -1,13 +1,9 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 .sign-in-wrapper {
   background-color: var(--color-app-background);
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 20px;
+  overflow-y: auto;
 
   display: flex;
   justify-content: center;
@@ -15,15 +11,17 @@
 }
 
 .login-modal {
-  width: 60vw;
-  height: 60vh;
+  width: min(920px, 90vw);
+  min-height: 480px;
+  height: auto;
   background-color: var(--color-modal-background);
 
   display: flex;
   flex-direction: row;
 
   border-radius: 30px;
-  box-shadow: -5px 10px 4px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: -5px 10px 14px 0px rgba(0, 0, 0, 0.2);
+  padding: 20px;
 }
 
 .modal__information {
@@ -36,7 +34,7 @@
 .modal__information img {
   flex: 1;
   min-height: 0;
-  height: 100%;
+  max-height: 140px;
   margin-top: 20px;
   margin-left: 30px;
 
@@ -70,15 +68,11 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin: 70px 20px;
+  margin: 40px 20px;
   gap: 20px;
 }
 
-.flex-1 {
-  flex: 1;
-  padding: 0 20px;
-}
-
+.flex-1,
 .flex-2 {
   flex: 1;
   padding: 0 20px;
@@ -104,7 +98,6 @@
 }
 
 .flex-3 span:hover {
-  font-size: 0.9rem;
   text-decoration: underline;
   color: var(--color-text-link-hover);
 }
@@ -113,10 +106,8 @@
   flex: 1;
   display: flex;
   flex-direction: row;
-
   justify-content: flex-end;
   align-items: flex-start;
-
   padding: 0 20px;
   gap: 30px;
 }
@@ -127,4 +118,71 @@
   text-align: center;
   font-weight: 500;
   padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+  .sign-in-wrapper {
+    padding: 16px 10px;
+  }
+
+  .login-modal {
+    width: min(92vw, 420px);
+    flex-direction: column;
+    padding: 24px 16px;
+    border-radius: 20px;
+    min-height: unset;
+  }
+
+  .modal__information {
+    overflow: visible;
+    align-items: center;
+    text-align: center;
+  }
+
+  .modal__information img {
+    max-height: 60px;
+    margin: 0 auto 10px auto;
+    align-self: center;
+  }
+
+  .information__text {
+    margin-left: 0;
+    align-items: center;
+    text-align: center;
+  }
+
+  .information__text h2 {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  .information__text h3 {
+    margin: 6px 0 0 0;
+    text-align: center;
+    margin-left: 0;
+  }
+
+  .modal__form {
+    margin: 20px 0 0 0;
+    gap: 16px;
+  }
+
+  .flex-1,
+  .flex-2,
+  .flex-3,
+  .flex-4,
+  .error-message {
+    padding: 0;
+  }
+
+  .flex-3 {
+    margin-left: 0;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .flex-4 {
+    justify-content: center;
+    width: 100%;
+  }
 }
