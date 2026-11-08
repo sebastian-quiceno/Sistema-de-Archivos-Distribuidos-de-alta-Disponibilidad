@@ -279,13 +279,13 @@ public class S3StorageService implements IStorageService, AutoCloseable {
                 return envValue.trim();
             }
 
-            // 3. Si parece ser un nombre de bucket completo (ej. contiene prefijo institucional o caracteres de bucket)
-            if (trimmed.equals(defaultBucket) || (trimmed.contains("-") && trimmed.length() > 10 && !trimmed.matches("^node-\\d+$"))) {
-                return trimmed;
+            // 3. Si el nombre coincide con el bucket por defecto
+            if (trimmed.equalsIgnoreCase(defaultBucket)) {
+                return defaultBucket;
             }
         }
 
-        // 4. Fallback al bucket por defecto
+        // 4. Fallback al bucket principal configurado
         if (defaultBucket != null && !defaultBucket.isBlank()) {
             return defaultBucket;
         }
