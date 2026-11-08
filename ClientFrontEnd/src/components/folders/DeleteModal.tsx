@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "../../styles/folder/DeleteModal.css";
 import { deleteFolder } from "../../services/folderService";
 
@@ -5,13 +6,35 @@ interface DeleteModalProps {
   folderId: string;
   folderName: string;
   closeMethod: () => void;
+  onDeleteSuccess?: (folderId: string) => void;
 }
 
 export function DeleteModal({
   folderId,
   closeMethod,
   folderName,
+  onDeleteSuccess,
 }: DeleteModalProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleDelete() {
+    setError("");
+    setIsDeleting(true);
+
+    try {
+      await deleteFolder(folderId);
+      onDeleteSuccess?.(folderId);
+      closeMethod();
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : "Error al eliminar la carpeta",
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <div className="delete-modal-overlay">
       <div className="delete-modal-content">
@@ -25,21 +48,26 @@ export function DeleteModal({
           <path d="M12 17h.01" />
         </svg>
         <h2 className="delete-modal__title">Borrar Carpeta</h2>
-        <p className="delete-modal__text">Seguro que quieres borrar la carpeta "<span>{folderName}</span>".</p>
+        <p className="delete-modal__text">
+          ¿Seguro que quieres borrar la carpeta "<span>{folderName}</span>"?
+        </p>
+        {error && <p className="delete-modal__error">{error}</p>}
         <div className="delete-modal__button-wrapper">
           <button
             className="delete-modal__button"
-            onClick={() => closeMethod()}
+            onClick={closeMethod}
+            disabled={isDeleting}
             type="button"
           >
-            No, mantener carpeta
+            Cancelar
           </button>
           <button
             className="delete-modal__button delete-modal__button--yes"
-            onClick={() => deleteFolder(folderId)}
+            onClick={handleDelete}
+            disabled={isDeleting}
             type="button"
           >
-            Si, borrar carpeta
+            {isDeleting ? "Borrando..." : "Sí, borrar carpeta"}
           </button>
         </div>
       </div>

@@ -82,3 +82,16 @@
   background-color: var(--color-modal-danger);
   color: var(--color-text-modal-white);
 }
+
+.delete-modal__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.delete-modal__error {
+  color: var(--color-input-error);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 6px;
+}

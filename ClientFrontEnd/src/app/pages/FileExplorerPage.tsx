@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { LogoRow } from "../../components/folders/LogoRow";
 import { AsideButtonsFileExplorer } from "../../components/folders/AsideButtonsFileExplorer";
 import { UploadFileModal } from "../../components/folders/UploadFileModal";
+import { CreateFolderModal } from "../../components/folders/CreateFolderModal";
 import { UserPerfileButton } from "../../components/users/UserPerfileButton";
 import { FileExplorer } from "../../components/folders/FileExplorer";
 import { useAuth } from "../../hooks/users/useAuth";
@@ -14,11 +15,16 @@ export function FileExplorerPage() {
   const rootFolderId = auth?.rootFolderId?.trim() || null;
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [explorerVersion, setExplorerVersion] = useState(0);
   const [navigateUpToken, setNavigateUpToken] = useState(0);
+
+  const activeFolderId = currentFolderId ?? rootFolderId;
+
   const handleCurrentFolderChange = useCallback((folderId: string) => {
     setCurrentFolderId(folderId);
   }, []);
+
   const canNavigateUp = Boolean(
     currentFolderId && rootFolderId && currentFolderId !== rootFolderId,
   );
@@ -31,8 +37,13 @@ export function FileExplorerPage() {
         </div>
         <div className="file-explorer-page__aside__buttons">
           <AsideButtonsFileExplorer
+            onCreateFolder={() => {
+              if (activeFolderId) {
+                setShowCreateFolderModal(true);
+              }
+            }}
             onUploadFile={() => {
-              if (currentFolderId) {
+              if (activeFolderId) {
                 setShowUploadModal(true);
               }
             }}
@@ -62,9 +73,16 @@ export function FileExplorerPage() {
       </main>
       {showUploadModal && (
         <UploadFileModal
-          folderId={currentFolderId ?? ""}
+          folderId={activeFolderId ?? ""}
           closeMethod={() => setShowUploadModal(false)}
           onUploadSuccess={() => setExplorerVersion((version) => version + 1)}
+        />
+      )}
+      {showCreateFolderModal && (
+        <CreateFolderModal
+          fatherId={activeFolderId ?? ""}
+          closeMethod={() => setShowCreateFolderModal(false)}
+          onCreateSuccess={() => setExplorerVersion((version) => version + 1)}
         />
       )}
     </div>

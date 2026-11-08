@@ -98,3 +98,14 @@
   background-color: var(--color-modal-danger);
   color: var(--color-text-modal-white);
 }
+
+.rename-modal__button--save {
+  background-color: var(--color-icon-file-document);
+  color: var(--color-text-modal-dark);
+  font-weight: 600;
+}
+
+.rename-modal__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

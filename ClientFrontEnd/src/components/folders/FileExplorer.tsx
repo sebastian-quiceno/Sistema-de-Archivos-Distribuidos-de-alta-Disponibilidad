@@ -122,7 +122,20 @@ export function FileExplorer({
         </div>
         <hr />
         {folders.map((item: FolderType) => (
-          <FolderBlock key={item.folderId} folderId={item.folderId} folderName={item.name} modifiedDate={new Date(item.createdDate)} onOpen={openFolder}/>
+          <FolderBlock
+            key={item.folderId}
+            folderId={item.folderId}
+            folderName={item.name}
+            modifiedDate={new Date(item.createdDate)}
+            onOpen={openFolder}
+            onFolderDeleted={(id) => {
+              setFolders((prev) => prev.filter((f) => f.folderId !== id));
+              refreshContent();
+            }}
+            onFolderRenamed={() => {
+              refreshContent();
+            }}
+          />
         ))}
         
         {files.map((item: MetadataFileType) => (

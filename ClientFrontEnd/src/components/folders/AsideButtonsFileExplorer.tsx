@@ -4,10 +4,21 @@ import { ButtonWithIcon } from "./ButtonWithIcon";
 import "../../styles/folder/AsideButtonsFileExplorer.css";
 
 interface AsideButtonsFileExplorerProps {
+  onCreateFolder?: () => void;
   onUploadFile?: () => void;
   onNavigateUp?: () => void;
   onOpenMore?: () => void;
   navigateUpDisabled?: boolean;
+}
+
+function NewFolderIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
+      <path d="M12 10v6" />
+      <path d="M9 13h6" />
+    </svg>
+  );
 }
 
 function UploadIcon(props: SVGProps<SVGSVGElement>) {
@@ -39,6 +50,7 @@ function MoreIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 export function AsideButtonsFileExplorer({
+  onCreateFolder,
   onUploadFile,
   onNavigateUp,
   onOpenMore,
@@ -46,6 +58,14 @@ export function AsideButtonsFileExplorer({
 }: AsideButtonsFileExplorerProps) {
   return (
     <div className="file-explorer-actions">
+      <ButtonWithIcon
+        Icono={NewFolderIcon}
+        background="#F0C785"
+        color="#4B3B22"
+        colorIco="#4B3B22"
+        text="Nueva Carpeta"
+        onClick={onCreateFolder}
+      />
       <ButtonWithIcon
         Icono={UploadIcon}
         background="#FFFFFF"

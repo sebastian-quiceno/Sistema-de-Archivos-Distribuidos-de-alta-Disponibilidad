@@ -7,33 +7,46 @@ interface WriteModalProps {
   folderId: string;
   folderName: string;
   closeMethod: () => void;
+  onRenameSuccess?: (newFolderName: string) => void;
 }
 
 export function WriteModal({
   folderId,
   folderName,
   closeMethod,
+  onRenameSuccess,
 }: WriteModalProps) {
-  const [newFolderName, setNewFolderName] = useState<string>("");
+  const [newFolderName, setNewFolderName] = useState<string>(folderName);
   const [error, setError] = useState("");
+  const [isRenaming, setIsRenaming] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const trimmed = newFolderName.trim();
+    if (!trimmed) {
+      setError("El nombre de la carpeta no puede estar vacío.");
+      return;
+    }
+
     setError("");
+    setIsRenaming(true);
 
     try {
       await renameFolder({
         folderId,
-        newFolderName,
+        newFolderName: trimmed,
       });
 
-      console.log("Cambio de nombre de la carpeta exitoso");
-    } catch (error) {
+      onRenameSuccess?.(trimmed);
+      closeMethod();
+    } catch (err: unknown) {
       setError(
-        error instanceof Error
-          ? error.message
+        err instanceof Error
+          ? err.message
           : "No se pudo cambiar el nombre de la carpeta",
       );
+    } finally {
+      setIsRenaming(false);
     }
   }
 
@@ -55,27 +68,47 @@ export function WriteModal({
         </p>
         <div className="rename-modal__input-wrapper">
           <input
-            name="login"
+            name="newFolderName"
             className="rename-modal__input"
             type="text"
             placeholder="Ingrese el nuevo nombre"
-            onChange={(event) => setNewFolderName(event.target.value)}
+            value={newFolderName}
+            disabled={isRenaming}
+            onChange={(event) => {
+              setNewFolderName(event.target.value);
+              if (error) setError("");
+            }}
+            autoFocus
           />
         </div>
-        {error && <p className="rename-modal__error">{error}</p>}
+        {error && (
+          <p
+            className="rename-modal__error"
+            style={{
+              color: "var(--color-input-error)",
+              fontSize: "0.85rem",
+              fontWeight: 500,
+              textAlign: "center",
+            }}
+          >
+            {error}
+          </p>
+        )}
         <div className="rename-modal__button-wrapper">
           <button
             className="rename-modal__button"
-            onClick={() => closeMethod()}
+            onClick={closeMethod}
+            disabled={isRenaming}
             type="button"
           >
-            No, mantener carpeta
+            Cancelar
           </button>
           <button
-            className="rename-modal__button rename-modal__button--yes"
+            className="rename-modal__button rename-modal__button--save"
             type="submit"
+            disabled={isRenaming}
           >
-            Si, borrar carpeta
+            {isRenaming ? "Guardando..." : "Renombrar"}
           </button>
         </div>
       </form>
