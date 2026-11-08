@@ -20,12 +20,9 @@ public class GetFilesByFolderIdUseCase {
 
     public List<MetadataFileOutput> execute(UUID folderId){
         UUID loggedUser = currentUser.getUserId();
-
-        Folder folder = folderRepository.getById(folderId);
-
         List<File> files;
 
-        if(folder == null){
+        if(folderId == null){
             files = folderRepository.getRelatedFileByUserId(loggedUser);
         }else{
             files = folderRepository.getRelatedFiles(folderId);

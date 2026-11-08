@@ -2,6 +2,7 @@ package com.sdan.middleware.Application.Users;
 
 import com.sdan.middleware.Application.Inputs.Commands.SignUpUserCommand;
 import com.sdan.middleware.Application.Outputs.UserCredentialsOutput;
+import com.sdan.middleware.Application.Ports.Repositories.IFolderRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IUserRepository;
 import com.sdan.middleware.Application.Ports.Security.IPasswordHasher;
 import com.sdan.middleware.Application.Ports.Security.ITokenGenerator;
@@ -25,6 +26,9 @@ class CreateNewUserUseCaseTest {
     private IUserRepository userRepository;
 
     @Mock
+    private IFolderRepository folderRepository;
+
+    @Mock
     private IPasswordHasher passwordHasher;
 
     @Mock
@@ -34,7 +38,7 @@ class CreateNewUserUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        createNewUserUseCase = new CreateNewUserUseCase(userRepository, passwordHasher, tokenGenerator);
+        createNewUserUseCase = new CreateNewUserUseCase(userRepository, folderRepository, passwordHasher, tokenGenerator);
     }
 
     @Test
@@ -51,8 +55,10 @@ class CreateNewUserUseCaseTest {
         assertEquals("newuser", output.userName());
         assertEquals("mockJwtToken", output.token());
         assertNotNull(output.userId());
+        assertNotNull(output.rootFolderId());
 
         verify(userRepository).save(any(User.class));
+        verify(folderRepository).save(any(com.sdan.middleware.Domain.Entities.Folder.class));
     }
 
     @Test

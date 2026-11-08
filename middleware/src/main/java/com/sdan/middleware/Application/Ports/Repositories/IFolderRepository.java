@@ -14,6 +14,8 @@ public interface IFolderRepository {
 
     List<Folder> getRelatedFoldersByUserId(UUID userId);
 
+    Optional<Folder> getRootFolderByUserId(UUID userId);
+
     List<File> getRelatedFiles(UUID id);
 
     List<File> getRelatedFileByUserId(UUID userId);

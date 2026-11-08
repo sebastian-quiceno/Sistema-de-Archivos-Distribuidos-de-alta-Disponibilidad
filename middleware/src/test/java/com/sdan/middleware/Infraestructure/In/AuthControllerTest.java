@@ -58,8 +58,9 @@ class AuthControllerTest {
     @DisplayName("POST /api/auth/register exitoso retorna 201 Created con credenciales y token")
     void register_withValidData_returns201Created() throws Exception {
         UUID userId = UUID.randomUUID();
+        UUID rootFolderId = UUID.randomUUID();
         String token = "jwt.token.here";
-        UserCredentialsOutput output = new UserCredentialsOutput(userId, "testuser", token);
+        UserCredentialsOutput output = new UserCredentialsOutput(userId, "testuser", token, rootFolderId);
 
         when(createNewUserUseCase.execute(any(SignUpUserCommand.class))).thenReturn(output);
 
@@ -71,7 +72,8 @@ class AuthControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.userId").value(userId.toString()))
                 .andExpect(jsonPath("$.userName").value("testuser"))
-                .andExpect(jsonPath("$.token").value(token));
+                .andExpect(jsonPath("$.token").value(token))
+                .andExpect(jsonPath("$.rootFolderId").value(rootFolderId.toString()));
     }
 
     @Test
@@ -121,9 +123,10 @@ class AuthControllerTest {
     @DisplayName("POST /api/auth/login exitoso retorna 200 OK con credenciales y token")
     void login_withValidCredentials_returns200Ok() throws Exception {
         UUID userId = UUID.randomUUID();
+        UUID rootFolderId = UUID.randomUUID();
         UserName username = new UserName("testuser");
         String token = "jwt.token.here";
-        UserCredentialsOutput output = new UserCredentialsOutput(userId, "testuser", token);
+        UserCredentialsOutput output = new UserCredentialsOutput(userId, "testuser", token, rootFolderId);
 
         when(userLoginUseCase.execute(eq(username), eq("Password123!"))).thenReturn(output);
 
@@ -135,7 +138,8 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId.toString()))
                 .andExpect(jsonPath("$.userName").value("testuser"))
-                .andExpect(jsonPath("$.token").value(token));
+                .andExpect(jsonPath("$.token").value(token))
+                .andExpect(jsonPath("$.rootFolderId").value(rootFolderId.toString()));
     }
 
     @Test

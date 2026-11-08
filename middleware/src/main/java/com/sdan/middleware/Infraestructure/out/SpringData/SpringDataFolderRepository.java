@@ -17,5 +17,8 @@ public interface SpringDataFolderRepository extends JpaRepository<FolderEntity, 
 
     @Query("SELECT f FROM FolderEntity f WHERE f.user.userId = :userId AND f.fatherFolder IS NULL")
     List<FolderEntity> findRelatedFoldersById(@Param("userId") UUID userId);
+
+    @Query("SELECT f FROM FolderEntity f WHERE f.user.userId = :userId AND f.fatherFolder IS NULL ORDER BY CASE WHEN LOWER(f.name) = 'root' THEN 0 ELSE 1 END, f.dateCreated ASC")
+    List<FolderEntity> findRootFoldersByUserId(@Param("userId") UUID userId);
 }
 

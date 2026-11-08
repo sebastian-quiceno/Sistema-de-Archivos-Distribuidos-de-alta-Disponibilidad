@@ -1,5 +1,6 @@
 package com.sdan.middleware.Infraestructure.Config;
 
+import com.sdan.middleware.Application.Ports.Repositories.IFolderRepository;
 import com.sdan.middleware.Application.Ports.Repositories.IUserRepository;
 import com.sdan.middleware.Application.Ports.Security.IPasswordHasher;
 import com.sdan.middleware.Application.Ports.Security.ITokenGenerator;
@@ -14,17 +15,19 @@ public class UserUseCaseConfig {
     @Bean
     public CreateNewUserUseCase createNewUserUseCase(
             IUserRepository userRepository,
+            IFolderRepository folderRepository,
             IPasswordHasher passwordHasher,
             ITokenGenerator tokenGenerator) {
-        return new CreateNewUserUseCase(userRepository, passwordHasher, tokenGenerator);
+        return new CreateNewUserUseCase(userRepository, folderRepository, passwordHasher, tokenGenerator);
     }
 
     @Bean
     public UserLoginUseCase userLoginUseCase(
             IUserRepository userRepository,
+            IFolderRepository folderRepository,
             IPasswordHasher passwordHasher,
             ITokenGenerator tokenGenerator) {
-        return new UserLoginUseCase(userRepository, passwordHasher, tokenGenerator);
+        return new UserLoginUseCase(userRepository, folderRepository, passwordHasher, tokenGenerator);
     }
 }
 

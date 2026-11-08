@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -69,6 +70,16 @@ public class FolderRepository implements IFolderRepository {
         return springDataFolderRepository.findRelatedFoldersById(userId).stream()
                 .map(folderMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Optional<Folder> getRootFolderByUserId(UUID userId) {
+        if (userId == null) {
+            return Optional.empty();
+        }
+        return springDataFolderRepository.findRootFoldersByUserId(userId).stream()
+                .findFirst()
+                .map(folderMapper::toDomain);
     }
 
     @Override

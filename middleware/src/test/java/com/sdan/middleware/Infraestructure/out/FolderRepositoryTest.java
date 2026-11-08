@@ -126,6 +126,36 @@ class FolderRepositoryTest {
     }
 
     @Test
+    void testGetRootFolderByUserId_found() {
+        UUID userId = UUID.randomUUID();
+        UserEntity userEntity = new UserEntity(userId, "john", "hash", new Date());
+        FolderEntity rootFolder = new FolderEntity(UUID.randomUUID(), userEntity, null, "root", new Date());
+
+        when(springDataFolderRepository.findRootFoldersByUserId(userId)).thenReturn(List.of(rootFolder));
+
+        Optional<Folder> result = folderRepository.getRootFolderByUserId(userId);
+
+        assertTrue(result.isPresent());
+        assertEquals("root", result.get().getName().getValue());
+    }
+
+    @Test
+    void testGetRootFolderByUserId_notFound() {
+        UUID userId = UUID.randomUUID();
+        when(springDataFolderRepository.findRootFoldersByUserId(userId)).thenReturn(List.of());
+
+        Optional<Folder> result = folderRepository.getRootFolderByUserId(userId);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetRootFolderByUserId_nullUserId() {
+        Optional<Folder> result = folderRepository.getRootFolderByUserId(null);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
     void testGetRelatedFiles() {
         UUID folderId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
