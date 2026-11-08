@@ -57,6 +57,10 @@
   stroke: var(--color-icon-action-delete);
 }
 
+.action-svg__info {
+  stroke: var(--color-icon-file-document);
+}
+
 .profile__button:hover {
   transform: scale(1.05);
 }

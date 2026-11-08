@@ -7,6 +7,7 @@ interface AsideButtonsFileExplorerProps {
   onCreateFolder?: () => void;
   onUploadFile?: () => void;
   onNavigateUp?: () => void;
+  onCheckIntegrity?: () => void;
   onOpenMore?: () => void;
   navigateUpDisabled?: boolean;
 }
@@ -39,12 +40,11 @@ function NavigateUpIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function MoreIcon(props: SVGProps<SVGSVGElement>) {
+function ShieldCheckIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="1" />
-      <circle cx="19" cy="12" r="1" />
-      <circle cx="5" cy="12" r="1" />
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+      <path d="m9 12 2 2 4-4" />
     </svg>
   );
 }
@@ -53,6 +53,7 @@ export function AsideButtonsFileExplorer({
   onCreateFolder,
   onUploadFile,
   onNavigateUp,
+  onCheckIntegrity,
   onOpenMore,
   navigateUpDisabled = false,
 }: AsideButtonsFileExplorerProps) {
@@ -83,14 +84,14 @@ export function AsideButtonsFileExplorer({
         onClick={onNavigateUp}
         disabled={navigateUpDisabled}
       />
-      {onOpenMore && (
+      {(onCheckIntegrity || onOpenMore) && (
         <ButtonWithIcon
-          Icono={MoreIcon}
+          Icono={ShieldCheckIcon}
           background="#A48370"
           color="#EDD9CB"
           colorIco="#EDD9CB"
-          text="Ver mas"
-          onClick={onOpenMore}
+          text="Estado Clúster"
+          onClick={onCheckIntegrity ?? onOpenMore}
         />
       )}
     </div>

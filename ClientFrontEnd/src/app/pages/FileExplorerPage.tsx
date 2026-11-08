@@ -5,6 +5,7 @@ import { LogoRow } from "../../components/folders/LogoRow";
 import { AsideButtonsFileExplorer } from "../../components/folders/AsideButtonsFileExplorer";
 import { UploadFileModal } from "../../components/folders/UploadFileModal";
 import { CreateFolderModal } from "../../components/folders/CreateFolderModal";
+import { ClusterIntegrityModal } from "../../components/folders/ClusterIntegrityModal";
 import { SearchBar } from "../../components/folders/SearchBar";
 import { UserPerfileButton } from "../../components/users/UserPerfileButton";
 import { FileExplorer } from "../../components/folders/FileExplorer";
@@ -18,6 +19,7 @@ export function FileExplorerPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
+  const [showIntegrityModal, setShowIntegrityModal] = useState(false);
   const [explorerVersion, setExplorerVersion] = useState(0);
   const [navigateUpToken, setNavigateUpToken] = useState(0);
 
@@ -55,6 +57,7 @@ export function FileExplorerPage() {
                 setNavigateUpToken((token) => token + 1);
               }
             }}
+            onCheckIntegrity={() => setShowIntegrityModal(true)}
             navigateUpDisabled={!canNavigateUp}
           />
         </div>
@@ -89,6 +92,11 @@ export function FileExplorerPage() {
           fatherId={activeFolderId ?? ""}
           closeMethod={() => setShowCreateFolderModal(false)}
           onCreateSuccess={() => setExplorerVersion((version) => version + 1)}
+        />
+      )}
+      {showIntegrityModal && (
+        <ClusterIntegrityModal
+          closeMethod={() => setShowIntegrityModal(false)}
         />
       )}
     </div>

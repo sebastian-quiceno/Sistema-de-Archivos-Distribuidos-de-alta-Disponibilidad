@@ -13,7 +13,7 @@ interface UploadFileModalProps {
 
 const ACCEPTED_FILE_EXTENSIONS =
   ".doc,.docx,.pdf,.png,.jpg,.jpeg,.mp3,.mp4";
-const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100 MB
+const MAX_FILE_SIZE_BYTES = 1000 * 1024 * 1024; // 1000 MB
 const INVALID_FORMAT_ERROR =
   "El formato del archivo no es compatible. Formatos admitidos: Documentos (DOC, PDF), Imágenes (PNG, JPG) y Multimedia (MP3, MP4).";
 const MAX_SIZE_ERROR =

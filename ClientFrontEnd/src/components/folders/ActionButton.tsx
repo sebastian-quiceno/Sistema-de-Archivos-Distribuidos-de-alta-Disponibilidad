@@ -1,6 +1,6 @@
 import "../../styles/folder/ActionButton.css";
 
-type ButtonVariant = "write" | "download" | "delete";
+type ButtonVariant = "write" | "download" | "delete" | "info";
 
 interface ActionButtonProps {
   variant: ButtonVariant;
@@ -70,8 +70,23 @@ const DeleteSVG = () => {
   );
 };
 
+const InfoSVG = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      className="action-svg action-svg__info"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="16" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12.01" y2="8" />
+    </svg>
+  );
+};
+
 const iconMap: Record<ButtonVariant, React.ComponentType> = {
   write: WriteSVG,
   download: DownloadSVG,
   delete: DeleteSVG,
+  info: InfoSVG,
 };

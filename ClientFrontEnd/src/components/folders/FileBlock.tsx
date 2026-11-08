@@ -10,6 +10,7 @@ import { formatBytes, formatDate } from "../../utils/formatters";
 
 import { DeleteFileModal } from "./DeleteFileModal";
 import { WriteFileModal } from "./WriteFileModal";
+import { FileMetadataModal } from "./FileMetadataModal";
 
 interface FileBlockProps {
   fileId: string;
@@ -30,6 +31,7 @@ export function FileBlock({
   onFileDeleted,
   onFileUpdated,
 }: FileBlockProps) {
+  const [showMetadataModal, setShowMetadataModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showWriteModal, setShowWriteModal] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -56,7 +58,25 @@ export function FileBlock({
       <p className="file-block__text">{formatBytes(size)}</p>
 
       <div className="file-block-actions">
-        <ActionButton onClick={() => setShowWriteModal(true)} variant="write" />
+        <ActionButton
+          onClick={() => setShowMetadataModal(true)}
+          variant="info"
+          title="Ver detalles técnicos del archivo"
+        />
+        {showMetadataModal ? (
+          <FileMetadataModal
+            fileId={fileId}
+            fallbackFileName={fileName}
+            fallbackFileType={fileType}
+            closeMethod={() => setShowMetadataModal(false)}
+          />
+        ) : null}
+
+        <ActionButton
+          onClick={() => setShowWriteModal(true)}
+          variant="write"
+          title="Actualizar archivo"
+        />
         {showWriteModal ? (
           <WriteFileModal
             fileId={fileId}
@@ -76,6 +96,7 @@ export function FileBlock({
         <ActionButton
           onClick={() => setShowDeleteModal(true)}
           variant="delete"
+          title="Eliminar archivo"
         />
         {showDeleteModal ? (
           <DeleteFileModal
