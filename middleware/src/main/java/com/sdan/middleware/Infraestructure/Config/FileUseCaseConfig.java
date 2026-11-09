@@ -165,5 +165,12 @@ public class FileUseCaseConfig {
         return new GetMetadataFileUseCase(currentUser, fileRepository);
     }
 
+    @Bean
+    public RenameFileUseCase renameFileUseCase(
+            IFileRepository fileRepository,
+            ICurrentUser currentUser) {
+        return new RenameFileUseCase(fileRepository, currentUser);
+    }
+
 }
 

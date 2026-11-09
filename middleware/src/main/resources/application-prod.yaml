@@ -1,10 +1,19 @@
 spring:
   datasource:
-    url: jdbc:postgresql://db:5432/smoothtune
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${DB_HOST:database}:${DB_PORT:5432}/${DB_NAME:metadata_database}?currentSchema=middleware}
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USER:middleware_admin}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:middlewarepassword}}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:none}
+    properties:
+      hibernate:
+        default_schema: middleware
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: ${RABBITMQ_AUTO_STARTUP:true}

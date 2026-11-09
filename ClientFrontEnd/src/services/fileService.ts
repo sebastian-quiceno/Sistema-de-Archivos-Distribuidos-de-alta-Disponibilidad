@@ -4,6 +4,7 @@ import {
   type DownloadFileType,
   type IntegrityCheckReportType,
   type MetadataFileType,
+  type RenameFileRequestType,
   type UpdateFileRequestType,
   type UploadFileRequestType,
 } from "../types/fileType";
@@ -94,6 +95,25 @@ export async function updateFile({ fileId, file }: UpdateFileRequestType): Promi
     );
   } catch (error: unknown) {
     throw new Error(getApiErrorMessage(error, "Error al actualizar archivo"), { cause: error });
+  }
+}
+
+export async function renameFile({ fileId, newFileName }: RenameFileRequestType): Promise<void> {
+  if (!fileId?.trim()) {
+    throw new Error("El identificador del archivo es obligatorio");
+  }
+
+  if (!newFileName?.trim()) {
+    throw new Error("El nuevo nombre del archivo es obligatorio");
+  }
+
+  try {
+    await apiClient.patch<void>(
+      `/files/${encodeURIComponent(fileId)}/rename`,
+      { newFileName: newFileName.trim() },
+    );
+  } catch (error: unknown) {
+    throw new Error(getApiErrorMessage(error, "Error al renombrar archivo"), { cause: error });
   }
 }
 

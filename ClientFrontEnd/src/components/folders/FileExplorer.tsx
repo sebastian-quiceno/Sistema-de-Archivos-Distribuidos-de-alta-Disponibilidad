@@ -242,7 +242,14 @@ export function FileExplorer({
               setFiles((prev) => prev.filter((f) => f.id !== item.id));
               refreshContent();
             }}
-            onFileUpdated={() => {
+            onFileUpdated={(newName) => {
+              if (newName) {
+                setFiles((prev) =>
+                  prev.map((f) =>
+                    f.id === item.id ? { ...f, fileName: newName } : f,
+                  ),
+                );
+              }
               refreshContent();
             }}
           />

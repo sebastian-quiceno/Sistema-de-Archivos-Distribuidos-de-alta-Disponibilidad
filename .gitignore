@@ -1,2 +1,8 @@
 # Carpeta con informacion extra 
 extra/
+
+# Environment files
+.env
+*.env
+!.env.example
+

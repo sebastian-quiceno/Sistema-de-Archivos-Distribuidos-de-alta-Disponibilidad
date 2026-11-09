@@ -19,7 +19,7 @@ interface FileBlockProps {
   modifiedDate: Date;
   size: number;
   onFileDeleted?: () => void;
-  onFileUpdated?: () => void;
+  onFileUpdated?: (newFileName?: string) => void;
 }
 
 export function FileBlock({
@@ -75,14 +75,15 @@ export function FileBlock({
         <ActionButton
           onClick={() => setShowWriteModal(true)}
           variant="write"
-          title="Actualizar archivo"
+          title="Renombrar archivo"
         />
         {showWriteModal ? (
           <WriteFileModal
             fileId={fileId}
             fileName={fileName}
             closeMethod={() => setShowWriteModal(false)}
-            onUpdateSuccess={onFileUpdated}
+            onRenameSuccess={(newName) => onFileUpdated?.(newName)}
+            onUpdateSuccess={() => onFileUpdated?.()}
           />
         ) : null}
 

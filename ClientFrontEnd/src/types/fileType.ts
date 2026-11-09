@@ -16,6 +16,11 @@ export interface UpdateFileRequestType {
     file: File;
 }
 
+export interface RenameFileRequestType {
+    fileId: string;
+    newFileName: string;
+}
+
 export interface MetadataFileType {
     id: string;
     folderId: string;

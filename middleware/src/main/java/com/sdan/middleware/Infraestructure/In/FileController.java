@@ -2,10 +2,12 @@ package com.sdan.middleware.Infraestructure.In;
 
 import com.sdan.middleware.Application.File.*;
 import com.sdan.middleware.Application.Inputs.Commands.CreateFileCommand;
+import com.sdan.middleware.Application.Inputs.Commands.RenameFileCommand;
 import com.sdan.middleware.Application.Inputs.Commands.UpdateFileCommand;
 import com.sdan.middleware.Application.Outputs.FileDownloadOutput;
 import com.sdan.middleware.Application.Outputs.IntegrityCheckReport;
 import com.sdan.middleware.Application.Outputs.MetadataFileOutput;
+import com.sdan.middleware.Infraestructure.In.DTOs.Request.RenameFileRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ContentDisposition;
@@ -44,14 +46,16 @@ public class FileController {
     private final DeleteFileUseCase deleteFileUseCase;
     private final CheckFilesUseCase checkFilesUseCase;
     private final GetMetadataFileUseCase getMetadataFileUseCase;
+    private final RenameFileUseCase renameFileUseCase;
 
-    public FileController(UploadFileUseCase uploadFileUseCase, GetFileUseCase getFileUseCase, UpdateFileUseCase updateFileUseCase, DeleteFileUseCase deleteFileUseCase, CheckFilesUseCase checkFilesUseCase, GetMetadataFileUseCase getMetadataFileUseCase) {
+    public FileController(UploadFileUseCase uploadFileUseCase, GetFileUseCase getFileUseCase, UpdateFileUseCase updateFileUseCase, DeleteFileUseCase deleteFileUseCase, CheckFilesUseCase checkFilesUseCase, GetMetadataFileUseCase getMetadataFileUseCase, RenameFileUseCase renameFileUseCase) {
         this.uploadFileUseCase = uploadFileUseCase;
         this.getFileUseCase = getFileUseCase;
         this.updateFileUseCase = updateFileUseCase;
         this.deleteFileUseCase = deleteFileUseCase;
         this.checkFilesUseCase = checkFilesUseCase;
         this.getMetadataFileUseCase = getMetadataFileUseCase;
+        this.renameFileUseCase = renameFileUseCase;
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -183,6 +187,25 @@ public class FileController {
             UpdateFileCommand command = new UpdateFileCommand(id, is, file.getSize());
             updateFileUseCase.execute(command);
         }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/rename")
+    @PreAuthorize("hasAuthority('files.update')")
+    public ResponseEntity<Void> renameFile(
+            @PathVariable("id") UUID id,
+            @RequestBody(required = false) RenameFileRequest request) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("El identificador del archivo no puede ser nulo");
+        }
+        if (request == null || request.newFileName() == null || request.newFileName().isBlank()) {
+            throw new IllegalArgumentException("El nuevo nombre del archivo es obligatorio");
+        }
+
+        RenameFileCommand command = new RenameFileCommand(id, request.newFileName().strip());
+        renameFileUseCase.execute(command);
 
         return ResponseEntity.noContent().build();
     }

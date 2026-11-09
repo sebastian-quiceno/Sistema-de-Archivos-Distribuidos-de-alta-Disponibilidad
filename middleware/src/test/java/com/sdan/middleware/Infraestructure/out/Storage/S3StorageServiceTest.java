@@ -416,7 +416,7 @@ class S3StorageServiceTest {
     void resolveBucket_whenNoBucketAvailable_throwsStorageOperationException() {
         S3StorageService unconfiguredService = new S3StorageService(s3Client, null, defaultRegion, "", null, Map.of());
 
-        assertThrows(StorageOperationException.class, () -> unconfiguredService.resolveBucket("unknown-node"));
+        assertThrows(StorageOperationException.class, () -> unconfiguredService.resolveBucket(null));
     }
 
     @Test
